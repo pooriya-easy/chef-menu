@@ -1,0 +1,38 @@
+.section { padding-block: 24px 80px; background: var(--background); color: var(--foreground); scroll-margin-top: 130px; }
+.panel { padding: clamp(20px, 4vw, 48px); border: 1px solid var(--line); border-radius: 28px; background: var(--surface); box-shadow: var(--card-shadow); }
+.heading { text-align: center; max-width: 720px; margin: 0 auto 32px; }
+.demoLabel { display: inline-block; padding: 5px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--orange); font-size: 11px; white-space: nowrap; }
+.heading h1, .heading h2 { font-size: clamp(23px, 3vw, 32px); line-height: 1.8; margin: 16px 0 12px; font-weight: 800; }
+.heading p { margin: 0; font-size: 14px; line-height: 2.2; color: var(--muted); }
+.heading .disclaimer { margin-top: 8px; font-size: 12px; color: var(--orange); }
+.body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+.withResults { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.dropzone { display: flex; flex-direction: column; justify-content: center; align-items: center; min-width: 0; min-height: 340px; padding: 28px 20px; border: 2px dashed var(--line); border-radius: 20px; background: var(--surface); text-align: center; transition: border-color .2s, background .2s; }
+.dragging { border-color: var(--orange); background: var(--accent-soft); }
+.camera { display: grid; place-items: center; width: 76px; height: 76px; border-radius: 22px; background: var(--accent-soft); color: var(--orange); margin-bottom: 20px; }
+.dropTitle { margin: 0 0 8px; font-size: 16px; font-weight: 700; line-height: 1.9; }
+.or { color: var(--muted); font-size: 12px; }
+.actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-block: 24px 10px; }
+.primary, .secondary { min-height: 48px; padding: 12px 18px; border-radius: 12px; font-size: 12px; font-weight: 700; transition: background .2s; }
+.primary { background: var(--orange); color: var(--button-foreground); }
+.primary:hover { background: #eb6a00; }
+.secondary { background: transparent; color: var(--foreground); border: 1px solid var(--line); }
+.secondary:hover { background: var(--accent-soft); }
+.hint { margin: 8px 0 0; font-size: 11px; line-height: 2; color: var(--muted); }
+.error { margin: 12px 0 0; font-size: 13px; line-height: 2; color: #fca5a5; }
+.preview { width: 100%; margin: 0; }
+.preview img { display: block; width: 100%; max-height: 240px; object-fit: contain; background: var(--background); border-radius: 14px; }
+.preview figcaption { margin-top: 10px; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+.results { min-width: 0; padding: 24px; background: var(--background); border: 1px solid var(--line); border-radius: 20px; }
+.resultsHeading { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-bottom: 24px; }
+.resultsHeading h3 { font-size: 19px; margin: 0; }
+.metrics { display: grid; gap: 16px; }
+.metricLabel { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; }
+.metricLabel strong { font-size: 20px; }
+.bar { height: 8px; overflow: hidden; border-radius: 999px; background: var(--surface-soft); margin-top: 10px; }
+.bar span { display: block; height: 100%; background: var(--orange); border-radius: inherit; }
+.percent { display: block; margin-top: 4px; text-align: left; color: var(--orange); font-size: 10px; }
+.clear, .back { display: inline-flex; align-items: center; min-height: 44px; margin-top: 14px; background: transparent; color: var(--orange); font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 900px) { .withResults { grid-template-columns: minmax(0, 1fr); } .section { padding-bottom: 64px; } }
+@media (max-width: 480px) { .panel { padding: 24px 16px; } .dropzone { padding: 24px 12px; } .dropTitle { font-size: 14px; } .actions { width: 100%; flex-direction: column; } .results { padding: 20px 16px; } }

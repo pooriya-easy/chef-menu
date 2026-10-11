@@ -1,0 +1,43 @@
+.section {
+  padding-block: 16px 80px;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.heading { max-width: 680px; margin: 0 auto 36px; text-align: center; }
+.eyebrow { display: inline-block; color: var(--orange); background: var(--accent-soft); border-radius: 999px; padding: 7px 14px; font-size: 11px; line-height: 1.8; }
+.heading h2 { margin: 16px 0 12px; font-size: clamp(24px, 3vw, 32px); font-weight: 800; line-height: 1.7; }
+.heading p { margin: 0; color: var(--muted); font-size: 14px; line-height: 2.1; }
+
+.grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; padding: 0; margin: 0; list-style: none; }
+.card { min-width: 0; padding: 24px 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--card-shadow); transition: border-color .2s, box-shadow .2s; }
+.card:hover { border-color: var(--orange); box-shadow: var(--card-shadow); }
+.cardTop { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
+.icon { display: inline-flex; align-items: center; justify-content: center; width: 54px; height: 54px; flex-shrink: 0; border-radius: 16px; background: var(--accent-soft); color: var(--orange); }
+.number { color: var(--muted); font-size: 13px; font-weight: 700; }
+.card h3 { margin: 0 0 12px; font-size: 16px; font-weight: 700; line-height: 1.9; }
+.card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 2.2; }
+.cardContent { height: 100%; }
+.card:has(.cardLink) { position: relative; }
+.card:has(.cardLink):focus-within { border-color: var(--orange); }
+.cardLink { display: inline-flex; margin-top: 18px; color: var(--orange); font-size: 12px; font-weight: 700; }
+.cardLink::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.cardLink:focus-visible { outline: none; }
+.cardLink:focus-visible::after { outline: 3px solid var(--orange); outline-offset: 4px; }
+
+@media (max-width: 1199px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .section { padding-bottom: 64px; }
+}
+
+@media (max-width: 560px) {
+  .grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .heading { margin-bottom: 28px; }
+  .heading p { font-size: 13px; }
+  .card { padding: 24px; }
+  .cardTop { margin-bottom: 18px; }
+}

@@ -1,0 +1,42 @@
+.section { padding-block: 32px 80px; scroll-margin-top: 130px; background: var(--background); color: var(--foreground); }
+.panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 56px; padding: clamp(24px, 4vw, 48px); border: 1px solid var(--line); border-radius: 28px; background: var(--surface); box-shadow: var(--card-shadow); }
+.intro { min-width: 0; }
+.icon { display: inline-flex; align-items: center; justify-content: center; width: 58px; height: 58px; border-radius: 18px; background: var(--accent-soft); color: var(--orange); }
+.title { margin: 20px 0 12px; font-size: clamp(23px, 2.6vw, 32px); font-weight: 800; line-height: 1.8; }
+.description { margin: 0; color: var(--muted); font-size: 14px; line-height: 2.2; }
+.servings { margin-top: 32px; }
+.counterLabel { display: block; margin-bottom: 14px; font-size: 14px; font-weight: 700; }
+.counter { display: inline-flex; align-items: center; gap: 24px; padding: 10px; border: 1px solid var(--line); border-radius: 18px; background: var(--background); }
+.counter button { display: grid; place-items: center; width: 48px; height: 48px; flex-shrink: 0; border-radius: 12px; background: var(--orange); color: var(--button-foreground); font-size: 27px; line-height: 1; transition: background .2s; }
+.counter button:hover:not(:disabled) { background: #eb6a00; }
+.counter button:disabled { background: var(--surface-soft); color: var(--muted); cursor: not-allowed; }
+.count { display: flex; align-items: baseline; justify-content: center; gap: 8px; min-width: 64px; font-variant-numeric: tabular-nums; }
+.count strong { font-size: 30px; line-height: 1.5; }
+.count span { color: var(--muted); font-size: 13px; }
+.hint { margin: 12px 0 0; color: var(--muted); font-size: 11px; line-height: 2; }
+.back { display: inline-flex; align-items: center; gap: 12px; margin-top: 24px; min-height: 44px; color: var(--orange); font-size: 13px; }
+.recipe { min-width: 0; padding: 26px; border: 1px solid var(--line); border-radius: 20px; background: var(--background); }
+.recipeHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.sample { color: var(--orange); font-size: 11px; }
+.recipeHeading h3 { margin: 8px 0 0; font-size: 20px; line-height: 1.8; }
+.portions { flex-shrink: 0; padding: 7px 12px; border-radius: 999px; color: var(--orange); background: var(--accent-soft); font-size: 12px; }
+.ingredients { margin: 8px 0 0; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 15px; border-bottom: 1px solid var(--line); font-size: 13px; line-height: 1.8; }
+.row:last-child { border-bottom: 0; }
+.row dd { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: flex-end; gap: 7px; margin: 0; text-align: end; }
+.row strong { color: var(--orange); font-size: 17px; font-variant-numeric: tabular-nums; }
+.row dd span { color: var(--muted); font-size: 11px; }
+.recipeNote { margin: 14px 0 0; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 2; }
+@media (max-width: 900px) {
+  .section { padding-block: 24px 64px; }
+  .panel { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+}
+@media (max-width: 480px) {
+  .panel { padding: 20px 16px; border-radius: 22px; }
+  .title { font-size: 23px; }
+  .recipe { padding: 18px 14px; }
+  .recipeHeading { gap: 8px; }
+  .recipeHeading h3 { font-size: 17px; }
+  .counter { gap: 16px; }
+  .row { gap: 10px; font-size: 12px; }
+}
