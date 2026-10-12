@@ -85,20 +85,25 @@ export default function AdminPanel() {
     if (fileInput.current) fileInput.current.value = '';
     setImageLoading(false);
     setEditingId(food.id);
-    setFoodName(food.name);
-    setCategory(food.category);
-    setCalories(food.calories);
-    setCookingTime(food.cookingTime);
-    setImageFile(food.image);
-    setInstructions(food.instructions.join('\n'));
-    setBaseServings(String(food.baseServings));
-    setIngredients(food.ingredients.map((ingredient) => ({ id: nextIngredientId.current++, name: ingredient.name,
-      quantity: ingredient.quantity === null ? '' : String(ingredient.quantity), unit: ingredient.unit })));
+    setFoodName(food.name || '');
+    setCategory(food.category || 'غذای سنتی');
+    setCalories(food.calories ? String(food.calories) : '');
+    setCookingTime(food.cookingTime || '');
+    setImageFile(food.image || '');
+    setInstructions(food.instructions?.join('\n') || '');
+    setBaseServings(String(food.baseServings || defaultServings));
+    setIngredients(food.ingredients.map((ingredient) => ({ 
+      id: nextIngredientId.current++, 
+      name: ingredient.name,
+      quantity: ingredient.quantity === null ? '' : String(ingredient.quantity), 
+      unit: ingredient.unit 
+    })));
     setStorageError('');
     setStatus('');
     form.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     nameInput.current?.focus({ preventScroll: true });
   };
+
 
   const handleSaveFood = (e: React.FormEvent) => {
     e.preventDefault();
