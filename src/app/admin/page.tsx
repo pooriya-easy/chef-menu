@@ -17,7 +17,7 @@ export default function AdminPanel() {
 
   // فرم افزودن غذا
   const [foodName, setFoodName] = useState('');
-  const [category, setCategory] = useState<FoodCategory>('غذای اصلی');
+  const [category, setCategory] = useState<FoodCategory>('غذای سنتی');
   const [calories, setCalories] = useState('');
   const [cookingTime, setCookingTime] = useState('');
   const [instructions, setInstructions] = useState('');
@@ -55,7 +55,7 @@ export default function AdminPanel() {
     if (fileInput.current) fileInput.current.value = '';
     setEditingId(null);
     setFoodName('');
-    setCategory('غذای اصلی');
+    setCategory('غذای سنتی');
     setCalories('');
     setCookingTime('');
     setInstructions('');
@@ -144,206 +144,233 @@ export default function AdminPanel() {
     router.push('/login');
   };
 
-  if (!authorized) return <div className="min-h-screen bg-slate-900 p-10 text-slate-300" dir="rtl" role="status">{storageError || 'در حال بررسی ورود…'}</div>;
+  if (!authorized) return <div className="min-h-screen bg-[#0a0a0a] p-4 text-zinc-400" dir="rtl" role="status">{storageError || 'در حال بررسی ورود…'}</div>;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 p-6 sm:p-10" dir="rtl">
+    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 p-3 sm:p-5" dir="rtl">
       
-      {/* هدر پنل */}
-      <div className="flex justify-between items-center max-w-5xl mx-auto mb-8 bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-lg">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-slate-950 font-bold text-lg">
+      {/* ردیف اول: هدر پنل مدیریت */}
+      <div className="flex justify-between items-center max-w-3xl mx-auto mb-4 bg-[#111111] px-3.5 py-2.5 rounded-xl border border-zinc-800 shadow-md">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center text-black font-bold text-xs">
             👨‍🍳
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white">پنل مدیریت سرآشپز</h1>
-            <p className="text-xs text-slate-400">مدیریت منوها، دسته‌بندی‌ها و مشخصات غذاها</p>
+            <h1 className="text-xs font-bold text-white">پنل مدیریت سرآشپز</h1>
+            <p className="text-[10px] text-zinc-400">مدیریت منوها و مشخصات غذاها</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Link href="/" className="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-xl transition">
+        <div className="flex items-center gap-2">
+          <Link href="/" className="text-[11px] bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 px-2.5 py-1 rounded-lg transition">
             مشاهده سایت
           </Link>
           <button 
             onClick={handleLogout}
-            className="text-xs bg-red-600/80 hover:bg-red-600 text-white px-3 py-2 rounded-xl transition font-medium"
+            className="text-[11px] bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 px-2.5 py-1 rounded-lg transition font-medium"
           >
-            خروج از حساب
+            خروج
           </button>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-3xl mx-auto flex flex-col gap-4">
         
-        {/* ستون راست: فرم افزودن غذا و آپلود عکس */}
-        <div className="md:col-span-1 bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl h-fit">
-          <h2 className="text-base font-bold text-amber-400 mb-4 flex items-center gap-2">
+        {/* ردیف دوم: فرم افزودن یا ویرایش غذای جدید (فشرده و جمع‌وجور) */}
+        <div className="w-full bg-[#111111] border border-zinc-800 rounded-xl p-3.5 sm:p-4 shadow-md">
+          <h2 className="text-xs font-bold text-amber-400 mb-3 flex items-center gap-1.5">
             <span>{editingId ? '✎' : '➕'}</span> {editingId ? 'ویرایش غذا و دستور پخت' : 'افزودن غذای جدید'}
           </h2>
 
-          <form ref={form} onSubmit={handleSaveFood} className="space-y-4 scroll-mt-6">
-            {storageError && <p role="alert" className="text-xs leading-6 text-red-300">{storageError}</p>}
-            <p role="status" className="text-xs leading-6 text-emerald-300">{status}</p>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">نام غذا / دسر</label>
-              <input
-                ref={nameInput}
-                type="text"
-                required
-                value={foodName}
-                onChange={(e) => setFoodName(e.target.value)}
-                placeholder="مثلاً: جوجه کباب مخصوص"
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400"
-              />
+          <form ref={form} onSubmit={handleSaveFood} className="space-y-3 scroll-mt-6">
+            {storageError && <p role="alert" className="text-[11px] leading-4 text-red-400">{storageError}</p>}
+            {status && <p role="status" className="text-[11px] leading-4 text-emerald-400">{status}</p>}
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label className="block text-[10px] font-medium text-zinc-400 mb-0.5">نام غذا / دسر</label>
+                <input
+                  ref={nameInput}
+                  type="text"
+                  required
+                  value={foodName}
+                  onChange={(e) => setFoodName(e.target.value)}
+                  placeholder="مثلاً: جوجه کباب مخصوص"
+                  className="w-full px-2 py-1.5 bg-[#0a0a0a] border border-zinc-800 rounded-lg text-white text-xs focus:outline-none focus:border-amber-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-medium text-zinc-400 mb-0.5">انتخاب دسته‌بندی</label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value as FoodCategory)}
+                  className="w-full px-2 py-1.5 bg-[#0a0a0a] border border-zinc-800 rounded-lg text-white text-xs focus:outline-none focus:border-amber-500 transition-colors"
+                >
+                  <option value="غذای سنتی">غذای سنتی</option>
+                  <option value="فست فود">فست فود</option>
+                  <option value="غذای دریایی">غذای دریایی</option>
+                  <option value="پیش غذا">پیش غذا</option>
+                  <option value="سالاد">سالاد</option>
+                  <option value="دسر">دسر</option>
+                  <option value="نوشیدنی سرد">نوشیدنی سرد</option>
+                  <option value="نوشیدنی گرم">نوشیدنی گرم</option>
+                </select>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">انتخاب دسته‌بندی</label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value as FoodCategory)}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400"
-              >
-                {foodCategories.map((item) => <option key={item} value={item}>{item}</option>)}
-              </select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label className="block text-[10px] font-medium text-zinc-400 mb-0.5">کالری و مواد مغذی</label>
+                <input
+                  type="text"
+                  value={calories}
+                  onChange={(e) => setCalories(e.target.value)}
+                  placeholder="مثلاً: ۵۵۰ کیلوکالری"
+                  className="w-full px-2 py-1.5 bg-[#0a0a0a] border border-zinc-800 rounded-lg text-white text-xs focus:outline-none focus:border-amber-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="admin-cooking-time" className="mb-0.5 block text-[10px] font-medium text-zinc-400">زمان پخت</label>
+                <input id="admin-cooking-time" value={cookingTime} onChange={(event) => setCookingTime(event.target.value)} placeholder="مثلاً ۳۰ دقیقه"
+                  className="w-full rounded-lg border border-zinc-800 bg-[#0a0a0a] px-2 py-1.5 text-xs text-white focus:border-amber-500 focus:outline-none transition-colors" />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">کالری و مواد مغذی</label>
-              <input
-                type="text"
-                value={calories}
-                onChange={(e) => setCalories(e.target.value)}
-                placeholder="مثلاً: ۵۵۰ کیلوکالری (پروتئین بالا)"
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400"
-              />
-            </div>
+            <fieldset className="space-y-2 rounded-lg border border-zinc-800 bg-[#0a0a0a]/40 p-2.5">
+              <legend className="px-1 text-[10px] font-bold text-amber-400">مواد اولیه و تعداد پایه دستور</legend>
+              <div className="flex items-center gap-2">
+                <label htmlFor="admin-base-servings" className="text-[10px] text-zinc-400 whitespace-nowrap">این مواد برای چند نفر:</label>
+                <input id="admin-base-servings" type="number" min={minServings} max={maxServings} step={1} required value={baseServings}
+                  onChange={(event) => setBaseServings(event.target.value)}
+                  className="w-20 rounded-md border border-zinc-800 bg-[#0a0a0a] px-2 py-1 text-xs text-white focus:border-amber-500 focus:outline-none transition-colors" />
+              </div>
+              
+              <div className="space-y-1.5">
+                {ingredients.map((ingredient, index) => (
+                  <div key={ingredient.id} className="grid grid-cols-1 sm:grid-cols-4 gap-1.5 rounded-md border border-zinc-800/80 bg-[#111111] p-2 items-center">
+                    <div className="sm:col-span-2">
+                      <input id={`admin-ingredient-${ingredient.id}-name`} value={ingredient.name} onChange={(event) => updateIngredient(ingredient.id, 'name', event.target.value)} placeholder={`نام ماده ${index + 1} (مثلاً برنج)`}
+                        className="w-full rounded border border-zinc-800 bg-[#0a0a0a] px-2 py-1 text-[11px] text-white focus:border-amber-500 focus:outline-none transition-colors" />
+                    </div>
+                    <div>
+                      <input id={`admin-ingredient-${ingredient.id}-quantity`} type="text" inputMode="decimal" value={ingredient.quantity} onChange={(event) => updateIngredient(ingredient.id, 'quantity', event.target.value)} placeholder="مقدار (مثلاً ۲۰۰)"
+                        className="w-full rounded border border-zinc-800 bg-[#0a0a0a] px-2 py-1 text-[11px] text-white focus:border-amber-500 focus:outline-none transition-colors" />
+                    </div>
+                    <div className="flex gap-1 items-center">
+                      <input id={`admin-ingredient-${ingredient.id}-unit`} value={ingredient.unit} onChange={(event) => updateIngredient(ingredient.id, 'unit', event.target.value)} placeholder="واحد"
+                        className="w-full rounded border border-zinc-800 bg-[#0a0a0a] px-2 py-1 text-[11px] text-white focus:border-amber-500 focus:outline-none transition-colors" />
+                      <button type="button" aria-label={`حذف ماده ${index + 1}`} onClick={() => setIngredients((current) => current.filter((item) => item.id !== ingredient.id))}
+                        className="p-1 text-xs text-red-400 hover:bg-red-950/40 rounded transition-colors" title="حذف">✕</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-            <div>
-              <label htmlFor="admin-cooking-time" className="mb-1 block text-xs text-slate-300">زمان پخت</label>
-              <input id="admin-cooking-time" value={cookingTime} onChange={(event) => setCookingTime(event.target.value)} placeholder="مثلاً ۳۰ دقیقه"
-                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:border-amber-400 focus:outline-none" />
-            </div>
-
-            <fieldset className="space-y-3 rounded-xl border border-emerald-800 bg-slate-900/50 p-3">
-              <legend className="px-2 text-xs font-bold text-emerald-300">مواد اولیه و تعداد پایه دستور</legend>
-              <label htmlFor="admin-base-servings" className="block text-xs text-slate-300">این مقدار مواد برای چند نفر است؟</label>
-              <input id="admin-base-servings" type="number" min={minServings} max={maxServings} step={1} required value={baseServings}
-                onChange={(event) => setBaseServings(event.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:border-emerald-400 focus:outline-none" />
-              <p className="text-[11px] leading-6 text-slate-400">مقدار مواد را برای همین تعداد وارد کنید؛ در جزئیات غذا برای تعداد دلخواه محاسبه می‌شود.</p>
-              {ingredients.map((ingredient, index) => <div key={ingredient.id} className="grid grid-cols-2 gap-2 rounded-lg border border-slate-700 p-2">
-                <div className="col-span-2">
-                  <label htmlFor={`admin-ingredient-${ingredient.id}-name`} className="mb-1 block text-[11px] text-slate-300">نام ماده {index + 1}</label>
-                  <input id={`admin-ingredient-${ingredient.id}-name`} value={ingredient.name} onChange={(event) => updateIngredient(ingredient.id, 'name', event.target.value)} placeholder="مثلاً برنج"
-                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2 py-2 text-xs text-white focus:border-emerald-400 focus:outline-none" />
-                </div>
-                <div>
-                  <label htmlFor={`admin-ingredient-${ingredient.id}-quantity`} className="mb-1 block text-[11px] text-slate-300">مقدار پایه</label>
-                  <input id={`admin-ingredient-${ingredient.id}-quantity`} type="text" inputMode="decimal" value={ingredient.quantity} onChange={(event) => updateIngredient(ingredient.id, 'quantity', event.target.value)} placeholder="مثلاً ۲۰۰"
-                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2 py-2 text-xs text-white focus:border-emerald-400 focus:outline-none" />
-                </div>
-                <div>
-                  <label htmlFor={`admin-ingredient-${ingredient.id}-unit`} className="mb-1 block text-[11px] text-slate-300">واحد</label>
-                  <input id={`admin-ingredient-${ingredient.id}-unit`} value={ingredient.unit} onChange={(event) => updateIngredient(ingredient.id, 'unit', event.target.value)} placeholder="مثلاً گرم"
-                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2 py-2 text-xs text-white focus:border-emerald-400 focus:outline-none" />
-                </div>
-                <button type="button" aria-label={`حذف ماده ${index + 1}`} onClick={() => setIngredients((current) => current.filter((item) => item.id !== ingredient.id))}
-                  className="col-span-2 rounded-lg py-1.5 text-xs text-red-300 hover:bg-red-950/50">حذف ماده</button>
-              </div>)}
               <button type="button" onClick={() => { const id = nextIngredientId.current++; setIngredients((current) => [...current, { id, name: '', quantity: '', unit: '' }]); }}
-                className="w-full rounded-lg border! border-emerald-700 bg-emerald-950 py-2 text-xs text-emerald-200 hover:bg-emerald-900">+ افزودن ماده اولیه</button>
-              <p className="text-[11px] leading-6 text-slate-400">برای نمک و ادویه به میزان دلخواه، مقدار را خالی بگذارید و در واحد «به میزان لازم» بنویسید.</p>
+                className="w-full rounded-md border border-amber-500/30 bg-amber-500/10 py-1.5 text-[11px] text-amber-300 hover:bg-amber-500/20 transition-colors">+ افزودن ماده اولیه</button>
             </fieldset>
 
             <div>
-              <label htmlFor="admin-instructions" className="mb-1 block text-xs text-slate-300">مراحل و دستور پخت</label>
-              <textarea id="admin-instructions" rows={6} value={instructions} onChange={(event) => setInstructions(event.target.value)} placeholder="هر مرحله را در یک خط بنویسید…"
-                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs leading-7 text-white focus:border-amber-400 focus:outline-none" />
+              <label htmlFor="admin-instructions" className="mb-0.5 block text-[10px] font-medium text-zinc-400">مراحل و دستور پخت (هر مرحله در یک خط)</label>
+              <textarea id="admin-instructions" rows={2} value={instructions} onChange={(event) => setInstructions(event.target.value)} placeholder="مراحل پخت..."
+                className="w-full rounded-lg border border-zinc-800 bg-[#0a0a0a] px-2 py-1.5 text-xs leading-5 text-white focus:border-amber-500 focus:outline-none transition-colors" />
             </div>
 
-            <div>
-              <label htmlFor="admin-image-url" className="mb-1 block text-xs text-slate-300">نشانی تصویر</label>
-              <input id="admin-image-url" value={imageFile} disabled={imageLoading} onChange={(event) => setImageFile(event.target.value)} placeholder="https://… یا /images/…" dir="ltr"
-                className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:border-amber-400 focus:outline-none" />
-              {imageFile && /^(\/(?!\/)|https?:\/\/|data:image\/|blob:)/i.test(imageFile) && <div className="relative mt-3 aspect-video overflow-hidden rounded-xl bg-slate-900"><FoodImage food={{ name: foodName || 'پیش‌نمایش تصویر', image: imageFile }} /></div>}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 items-start">
+              <div>
+                <label htmlFor="admin-image-url" className="mb-0.5 block text-[10px] font-medium text-zinc-400">نشانی تصویر</label>
+                <input id="admin-image-url" value={imageFile} disabled={imageLoading} onChange={(event) => setImageFile(event.target.value)} placeholder="https://… یا /images/…" dir="ltr"
+                  className="w-full rounded-lg border border-zinc-800 bg-[#0a0a0a] px-2 py-1.5 text-xs text-white focus:border-amber-500 focus:outline-none transition-colors" />
+                {imageFile && /^(\/(?!\/)|https?:\/\/|data:image\/|blob:)/i.test(imageFile) && (
+                  <div className="relative mt-1.5 aspect-video max-w-[200px] overflow-hidden rounded-lg bg-[#0a0a0a] border border-zinc-800">
+                    <FoodImage food={{ name: foodName || 'پیش‌نمایش تصویر', image: imageFile }} />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-medium text-zinc-400 mb-0.5">آپلود عکس غذا</label>
+                <input
+                  ref={fileInput}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      imageReader.current?.abort();
+                      const reader = new FileReader();
+                      imageReader.current = reader;
+                      setImageLoading(true);
+                      reader.onload = () => {
+                        if (imageReader.current !== reader) return;
+                        if (typeof reader.result === 'string') setImageFile(reader.result);
+                        setImageLoading(false);
+                      };
+                      reader.onerror = () => {
+                        if (imageReader.current !== reader) return;
+                        setImageLoading(false);
+                        setStorageError('خواندن تصویر ممکن نشد.');
+                      };
+                      reader.readAsDataURL(e.target.files[0]);
+                    }
+                  }}
+                  className="w-full text-[11px] text-zinc-400 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-amber-500 file:text-black hover:file:bg-amber-400 cursor-pointer"
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">آپلود عکس غذا</label>
-              <input
-                ref={fileInput}
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    imageReader.current?.abort();
-                    const reader = new FileReader();
-                    imageReader.current = reader;
-                    setImageLoading(true);
-                    reader.onload = () => {
-                      if (imageReader.current !== reader) return;
-                      if (typeof reader.result === 'string') setImageFile(reader.result);
-                      setImageLoading(false);
-                    };
-                    reader.onerror = () => {
-                      if (imageReader.current !== reader) return;
-                      setImageLoading(false);
-                      setStorageError('خواندن تصویر ممکن نشد. تصویر دیگری انتخاب کنید.');
-                    };
-                    reader.readAsDataURL(e.target.files[0]);
-                  }
-                }}
-                className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-slate-950 hover:file:bg-amber-400 cursor-pointer"
-              />
+            <div className="flex gap-2 pt-1">
+              <button
+                type="submit"
+                disabled={imageLoading}
+                className="flex-1 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg shadow transition text-xs active:scale-95"
+              >
+                {imageLoading ? 'در حال آماده‌سازی تصویر…' : editingId ? 'ذخیره تغییرات' : 'ثبت و انتشار غذا'}
+              </button>
+              {editingId && (
+                <button type="button" onClick={() => { resetForm(); setStatus(''); }} className="px-4 rounded-lg bg-zinc-800 py-2 text-xs text-zinc-300 hover:bg-zinc-700 transition">
+                  انصراف
+                </button>
+              )}
             </div>
-
-            <button
-              type="submit"
-              disabled={imageLoading}
-              className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl shadow transition text-xs"
-            >
-              {imageLoading ? 'در حال آماده‌سازی تصویر…' : editingId ? 'ذخیره تغییرات' : 'ثبت و انتشار غذا'}
-            </button>
-            {editingId && <button type="button" onClick={() => { resetForm(); setStatus(''); }} className="w-full rounded-xl bg-slate-700 py-2.5 text-xs text-slate-200 hover:bg-slate-600">انصراف از ویرایش</button>}
           </form>
         </div>
 
-        {/* ستون چپ: لیست غذاهای موجود در منو */}
-        <div className="md:col-span-2 bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl">
-          <h2 className="text-base font-bold text-white mb-4 flex items-center justify-between">
+        {/* ردیف سوم: لیست غذاهای موجود در منو */}
+        <div className="w-full bg-[#111111] border border-zinc-800 rounded-xl p-3.5 sm:p-4 shadow-md">
+          <h2 className="text-xs font-bold text-white mb-3 flex items-center justify-between">
             <span>📋 لیست غذاهای منو ({foods.length})</span>
-            <span className="text-xs text-amber-400 font-normal">قابلیت حذف یا ویرایش</span>
+            <span className="text-[10px] text-amber-400 font-normal">قابلیت حذف یا ویرایش</span>
           </h2>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             {foods.length === 0 ? (
-              <p className="text-slate-500 text-xs text-center py-8">هیچ غذایی در منو وجود ندارد.</p>
+              <p className="text-zinc-500 text-xs text-center py-4">هیچ غذایی در منو وجود ندارد.</p>
             ) : (
               foods.map((food) => (
-                <div key={food.id} className={`flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-900 rounded-xl border ${editingId === food.id ? 'border-amber-400' : 'border-slate-700/60'}`}>
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-700"><FoodImage food={food} /></div>
+                <div key={food.id} className={`flex flex-wrap items-center justify-between gap-2.5 p-2.5 bg-[#0a0a0a] rounded-lg border ${editingId === food.id ? 'border-amber-400' : 'border-zinc-800'}`}>
+                  <div className="flex items-center gap-2">
+                    <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md border border-zinc-800"><FoodImage food={food} /></div>
                     <div>
-                      <h3 className="text-sm font-bold text-white">{food.name}</h3>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded border border-amber-500/20">
+                      <h3 className="text-xs font-bold text-white">{food.name}</h3>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[9px] bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded border border-amber-500/20">
                           {food.category}
                         </span>
-                        <span className="text-[10px] text-slate-400">{food.calories}</span>
+                        <span className="text-[9px] text-zinc-400">{food.calories}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
-                  <button type="button" onClick={() => handleEditFood(food)} aria-label={`ویرایش ${food.name}`} aria-pressed={editingId === food.id}
-                    className="rounded-lg border! border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs text-amber-300 hover:bg-amber-500/20">ویرایش</button>
-                  <button type="button"
-                    onClick={() => handleDeleteFood(food.id)}
-                    className="text-xs bg-red-900/40 text-red-400 hover:bg-red-900/70 px-3 py-1.5 rounded-lg border border-red-700/40 transition"
-                  >
-                    حذف
-                  </button>
+                  <div className="flex gap-1.5">
+                    <button type="button" onClick={() => handleEditFood(food)} aria-label={`ویرایش ${food.name}`} aria-pressed={editingId === food.id}
+                      className="rounded border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-[11px] text-amber-300 hover:bg-amber-500/20 transition">ویرایش</button>
+                    <button type="button"
+                      onClick={() => handleDeleteFood(food.id)}
+                      className="text-[11px] bg-red-950/40 text-red-400 hover:bg-red-900/60 px-2 py-1 rounded border border-red-800/40 transition"
+                    >
+                      حذف
+                    </button>
                   </div>
                 </div>
               ))

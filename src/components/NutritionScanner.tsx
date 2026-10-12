@@ -50,14 +50,8 @@ export default function NutritionScanner({ standalone = false }: { standalone?: 
   }
 
   return (
-    <section id="scanner" className={styles.section} dir="rtl" aria-labelledby="scanner-title">
+    <section id="scanner" className={styles.section} dir="rtl">
       <div className={styles.panel}>
-        <div className={styles.heading}>
-          <span className={styles.demoLabel}>نسخه نمایشی</span>
-          <Heading id="scanner-title">اسکن هوشمند ارزش غذایی</Heading>
-          <p>عکس غذات رو آپلود کن تا کالری و ارزش غذایی دقیقش رو بهت بگیم!</p>
-          <p className={styles.disclaimer}>در این نسخه، نتایج ثابت و نمونه‌اند و از روی عکس محاسبه نمی‌شوند.</p>
-        </div>
         <div className={`${styles.body} ${showResults ? styles.withResults : ""}`}>
           <div className={`${styles.dropzone} ${dragging ? styles.dragging : ""}`}
             onDragEnter={(event) => { event.preventDefault(); dragDepth.current += 1; setDragging(true); }}
@@ -76,18 +70,14 @@ export default function NutritionScanner({ standalone = false }: { standalone?: 
             ) : (
               <>
                 <span className={styles.camera} aria-hidden="true"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="m8 5 2-2h4l2 2h5v15H3V5h5Z" /><circle cx="12" cy="12" r="4" /></svg></span>
-                <p className={styles.dropTitle}>{dragging ? "عکس را اینجا رها کن" : "عکس غذایت را اینجا بکش و رها کن"}</p>
-                <span className={styles.or}>یا از دستگاهت انتخاب کن</span>
               </>
             )}
             <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" hidden aria-label="انتخاب عکس غذا"
               onChange={(event) => { selectFile(event.target.files); event.target.value = ""; }} />
             <div className={styles.actions}>
-              <button type="button" className={styles.primary} aria-describedby="scanner-file-hint" onClick={() => inputRef.current?.click()}>{preview ? "انتخاب تصویر دیگر" : "انتخاب تصویر"}</button>
+              <button type="button" className={styles.primary} onClick={() => inputRef.current?.click()}>{preview ? "انتخاب تصویر دیگر" : "انتخاب تصویر"}</button>
               <button type="button" className={styles.secondary} onClick={() => { reset(); setShowResults(true); }}>تست با نتیجه نمونه</button>
             </div>
-            <p id="scanner-file-hint" className={styles.hint}>JPG، PNG یا WebP · حداکثر ۱۰ مگابایت</p>
-            <p className={styles.hint}>تصویر فقط در مرورگر شما نمایش داده می‌شود.</p>
             {error && <p className={styles.error} role="alert">{error}</p>}
           </div>
           {showResults && (
