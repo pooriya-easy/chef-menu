@@ -46,9 +46,11 @@ export default function PersonalizedSuggestions() {
   const [selected, setSelected] = useState<Interest | 'همه'>('همه');
 
   const filtered = useMemo(() => {
-    return foods.filter((food) => food.placements.includes('personalized') && (selected === 'همه' || food.tags.includes(selected)));
-  }, [foods, selected]);
-
+  return foods.filter((food) => 
+    (food.placements ?? []).includes('personalized') && 
+    (selected === 'همه' || (food.tags ?? []).includes(selected))
+  );
+}, [foods, selected]);
   return (
     <section className="w-full py-14 bg-background" dir="rtl">
       <div className="mx-auto max-w-6xl px-4">

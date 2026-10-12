@@ -5,7 +5,7 @@ import { useFoods } from "../lib/foodStore";
 import FoodRecipeDialog from "./FoodRecipeDialog";
 
 export default function RandomFoodSuggestion() {
-  const foods = useFoods().filter((food) => food.placements.includes("random"));
+  const foods = useFoods().filter((food) => (food.placements ?? []).includes("random"));
   const [selected, setSelected] = useState<string | null>(null);
   const [recipeId, setRecipeId] = useState<string | null>(null);
   function pickFood() {
