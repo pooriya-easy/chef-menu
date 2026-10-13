@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { defaultServings, maxServings, minServings, parseQuantity, parseServings } from '../../lib/recipeIngredients';
-import { foodCategories, upsertFood } from '../../lib/foodCatalog';
+import { foodCategories, upsertFood, saveFoodToSupabase, deleteFoodFromSupabase } from '../../lib/foodCatalog';
 import type { Food, FoodCategory } from '../../lib/foodCatalog';
 import { updateFoodCatalog, useFoods } from '../../lib/foodStore';
 import FoodImage from '../../components/FoodImage';
@@ -23,6 +23,7 @@ export default function AdminPanel() {
   const [instructions, setInstructions] = useState('');
   const [imageFile, setImageFile] = useState<string>('');
   const [imageLoading, setImageLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [storageError, setStorageError] = useState('');
   const [status, setStatus] = useState('');
   const [baseServings, setBaseServings] = useState(String(defaultServings));
@@ -61,22 +62,10 @@ export default function AdminPanel() {
     setInstructions('');
     setImageFile('');
     setImageLoading(false);
+    setIsSaving(false);
     setBaseServings(String(defaultServings));
     setIngredients([{ id: nextIngredientId.current++, name: '', quantity: '', unit: '' }]);
     setStorageError('');
-  };
-
-  const saveFoods = (update: (current: Food[]) => Food[]) => {
-    try {
-      if (!localStorage.getItem('isAdmin')) { router.push('/login'); return false; }
-      updateFoodCatalog(update);
-      setStorageError('');
-      return true;
-    } catch (error) {
-      setStorageError(error instanceof Error && error.name === 'Error' ? error.message
-        : 'ذخیره غذا ممکن نشد؛ فضای مرورگر را بررسی کنید یا تصویر کوچک‌تری انتخاب کنید.');
-      return false;
-    }
   };
 
   const handleEditFood = (food: Food) => {
@@ -92,22 +81,21 @@ export default function AdminPanel() {
     setImageFile(food.image || '');
     setInstructions(food.instructions?.join('\n') || '');
     setBaseServings(String(food.baseServings || defaultServings));
-    setIngredients(food.ingredients.map((ingredient) => ({ 
+    setIngredients(food.ingredients && food.ingredients.length > 0 ? food.ingredients.map((ingredient) => ({ 
       id: nextIngredientId.current++, 
       name: ingredient.name,
-      quantity: ingredient.quantity === null ? '' : String(ingredient.quantity), 
-      unit: ingredient.unit 
-    })));
+      quantity: ingredient.quantity === null || ingredient.quantity === undefined ? '' : String(ingredient.quantity), 
+      unit: ingredient.unit || '' 
+    })) : [{ id: nextIngredientId.current++, name: '', quantity: '', unit: '' }]);
     setStorageError('');
     setStatus('');
     form.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     nameInput.current?.focus({ preventScroll: true });
   };
 
-
-  const handleSaveFood = (e: React.FormEvent) => {
+  const handleSaveFood = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!foodName.trim() || imageLoading) return;
+    if (!foodName.trim() || imageLoading || isSaving) return;
 
     const base = parseServings(baseServings);
     const enteredIngredients = ingredients.filter((ingredient) => ingredient.name.trim() || ingredient.quantity.trim() || ingredient.unit.trim());
@@ -121,27 +109,63 @@ export default function AdminPanel() {
       setStorageError('برای تصویر یک نشانی معتبر یا فایل تصویر انتخاب کنید.');
       return;
     }
-    const id = editingId ?? 'admin-' + crypto.randomUUID();
-    const saved = saveFoods((current) => {
-      const previous = current.find((food) => food.id === id);
+
+    setIsSaving(true);
+    setStorageError('');
+
+    try {
+      const id = editingId ?? 'admin-' + crypto.randomUUID();
+      const previous = foods.find((f) => f.id === id);
+      
       const item: Food = {
-        id, name: foodName.trim(), category, calories: calories.trim() || 'ثبت نشده',
-        cookingTime: cookingTime.trim() || 'ثبت نشده', image: imageFile.trim() || '/food-placeholder.svg',
-        baseServings: base, ingredients: enteredIngredients.map((ingredient) => ({ name: ingredient.name.trim(), quantity: parseQuantity(ingredient.quantity), unit: ingredient.unit.trim() })),
+        id,
+        name: foodName.trim(),
+        category,
+        calories: calories.trim() || 'ثبت نشده',
+        cookingTime: cookingTime.trim() || 'ثبت نشده',
+        image: imageFile.trim() || '/food-placeholder.svg',
+        baseServings: base,
+        ingredients: enteredIngredients.map((ingredient) => ({
+          name: ingredient.name.trim(),
+          quantity: parseQuantity(ingredient.quantity),
+          unit: ingredient.unit.trim()
+        })),
         instructions: instructions.split(/\r?\n/).map((step) => step.trim()).filter(Boolean),
-        tags: previous?.tags ?? [], placements: previous?.placements ?? ['menu', 'personalized', 'random', 'search'],
+        tags: previous?.tags ?? [],
+        placements: previous?.placements ?? ['menu', 'personalized', 'random', 'search'],
       };
-      return upsertFood(current, item, editingId !== null);
-    });
-    if (!saved) return;
-    resetForm();
-    setStatus(editingId ? 'تغییرات غذا ذخیره و در سایت اعمال شد.' : 'غذای جدید با موفقیت اضافه شد.');
+
+      // 1. ذخیره در Supabase
+      const dbSuccess = await saveFoodToSupabase(item);
+      if (!dbSuccess) {
+        setStorageError('ذخیره در دیتابیس با مشکل مواجه شد. لطفاً اتصال اینترنت خود را بررسی کنید.');
+        setIsSaving(false);
+        return;
+      }
+
+      // 2. به‌روزرسانی استور داخلی برنامه
+      updateFoodCatalog((current) => upsertFood(current, item, editingId !== null));
+
+      resetForm();
+      setStatus(editingId ? 'تغییرات با موفقیت در دیتابیس ثبت و اعمال شد.' : 'غذای جدید در دیتابیس ذخیره و منتشر شد.');
+    } catch (err) {
+      setStorageError('خطایی رخ داد: ' + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleDeleteFood = (id: string) => {
-    if (!saveFoods((current) => current.filter((food) => food.id !== id))) return;
-    if (editingId === id) resetForm();
-    setStatus('غذا از فهرست سایت حذف شد.');
+  const handleDeleteFood = async (id: string) => {
+    if (!confirm('آیا از حذف این غذا مطمئن هستید؟')) return;
+
+    try {
+      await deleteFoodFromSupabase(id);
+      updateFoodCatalog((current) => current.filter((food) => food.id !== id));
+      if (editingId === id) resetForm();
+      setStatus('غذا با موفقیت از دیتابیس و فهرست سایت حذف شد.');
+    } catch {
+      setStorageError('حذف غذا با خطا مواجه شد.');
+    }
   };
 
   const handleLogout = () => {
@@ -162,7 +186,7 @@ export default function AdminPanel() {
           </div>
           <div>
             <h1 className="text-xs font-bold text-white">پنل مدیریت سرآشپز</h1>
-            <p className="text-[10px] text-zinc-400">مدیریت منوها و مشخصات غذاها</p>
+            <p className="text-[10px] text-zinc-400">اتصال آنلاین به Supabase Cloud</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -180,7 +204,7 @@ export default function AdminPanel() {
 
       <div className="max-w-3xl mx-auto flex flex-col gap-4">
         
-        {/* ردیف دوم: فرم افزودن یا ویرایش غذای جدید (فشرده و جمع‌وجور) */}
+        {/* ردیف دوم: فرم افزودن یا ویرایش غذا */}
         <div className="w-full bg-[#111111] border border-zinc-800 rounded-xl p-3.5 sm:p-4 shadow-md">
           <h2 className="text-xs font-bold text-amber-400 mb-3 flex items-center gap-1.5">
             <span>{editingId ? '✎' : '➕'}</span> {editingId ? 'ویرایش غذا و دستور پخت' : 'افزودن غذای جدید'}
@@ -327,10 +351,10 @@ export default function AdminPanel() {
             <div className="flex gap-2 pt-1">
               <button
                 type="submit"
-                disabled={imageLoading}
-                className="flex-1 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg shadow transition text-xs active:scale-95"
+                disabled={imageLoading || isSaving}
+                className="flex-1 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg shadow transition text-xs active:scale-95 disabled:opacity-50"
               >
-                {imageLoading ? 'در حال آماده‌سازی تصویر…' : editingId ? 'ذخیره تغییرات' : 'ثبت و انتشار غذا'}
+                {isSaving ? 'در حال ذخیره در دیتابیس…' : imageLoading ? 'در حال آماده‌سازی تصویر…' : editingId ? 'ذخیره تغییرات' : 'ثبت و انتشار غذا'}
               </button>
               {editingId && (
                 <button type="button" onClick={() => { resetForm(); setStatus(''); }} className="px-4 rounded-lg bg-zinc-800 py-2 text-xs text-zinc-300 hover:bg-zinc-700 transition">
@@ -345,7 +369,7 @@ export default function AdminPanel() {
         <div className="w-full bg-[#111111] border border-zinc-800 rounded-xl p-3.5 sm:p-4 shadow-md">
           <h2 className="text-xs font-bold text-white mb-3 flex items-center justify-between">
             <span>📋 لیست غذاهای منو ({foods.length})</span>
-            <span className="text-[10px] text-amber-400 font-normal">قابلیت حذف یا ویرایش</span>
+            <span className="text-[10px] text-amber-400 font-normal">ذخیره خودکار در Supabase</span>
           </h2>
 
           <div className="space-y-2">

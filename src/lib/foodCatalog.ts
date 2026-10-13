@@ -1,3 +1,5 @@
+import { supabase } from './supabaseClient';
+
 export const foodCategories = [
   'غذای سنتی',
   'فست فود',
@@ -75,7 +77,85 @@ export const initialFoods: Food[] = [
 ];
 
 /**
- * خواندن کاتالوگ غذاها از استوریج یا لیست اولیه
+ * دریافت لیست تمام غذاها از Supabase
+ */
+export async function fetchFoodsFromSupabase(): Promise<Food[]> {
+  try {
+    const { data, error } = await supabase
+      .from('foods')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching foods from Supabase:', error.message);
+      return [...initialFoods];
+    }
+
+    if (!data || data.length === 0) {
+      return [...initialFoods];
+    }
+
+    return data.map((item: any) => ({
+      ...item,
+      id: String(item.id),
+      cookingTime: item.cookingTime || item.cookTime || '۳۰ دقیقه',
+      cookTime: item.cookTime || item.cookingTime || '۳۰ دقیقه',
+      ingredients: Array.isArray(item.ingredients) ? item.ingredients : [],
+      instructions: Array.isArray(item.instructions) ? item.instructions : [],
+    }));
+  } catch (err) {
+    console.error('Supabase fetch exception:', err);
+    return [...initialFoods];
+  }
+}
+
+/**
+ * ذخیره یا به‌روزرسانی یک غذا در دیتابیس Supabase
+ */
+export async function saveFoodToSupabase(food: Food): Promise<boolean> {
+  try {
+    const payload = {
+      id: String(food.id),
+      name: food.name ?? '',
+      category: food.category ?? 'غذای سنتی',
+      calories: String(food.calories ?? ''),
+      cookingTime: food.cookingTime || food.cookTime || '',
+      image: food.image ?? '',
+      ingredients: food.ingredients ?? [],
+      instructions: food.instructions ?? [],
+    };
+
+    const { error } = await supabase.from('foods').upsert(payload);
+    if (error) {
+      console.error('Error saving food to Supabase:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Supabase save exception:', err);
+    return false;
+  }
+}
+
+/**
+ * حذف یک غذا از دیتابیس Supabase
+ */
+export async function deleteFoodFromSupabase(foodId: string): Promise<boolean> {
+  try {
+    const { error } = await supabase.from('foods').delete().eq('id', String(foodId));
+    if (error) {
+      console.error('Error deleting food from Supabase:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Supabase delete exception:', err);
+    return false;
+  }
+}
+
+/**
+ * توابع کمکی سازگاری محلی
  */
 export function readFoodCatalog(rawSnapshot?: any): Food[] {
   if (rawSnapshot === null || rawSnapshot === undefined) {
@@ -98,7 +178,6 @@ export function readFoodCatalog(rawSnapshot?: any): Food[] {
   return [...initialFoods];
 }
 
-/** تبدیل فهرست غذاها به متن JSON با هندل کردن امن خطاها */
 export function serializeFoodCatalog(foods: any): string {
   try {
     return JSON.stringify(foods ?? []);
@@ -107,16 +186,12 @@ export function serializeFoodCatalog(foods: any): string {
   }
 }
 
-/**
- * افزودن یا به‌روزرسانی غذا (پشتیبانی هوشمند از هر ترتیب ورودی در ادمین)
- */
 export function upsertFood(...args: any[]): Food[] {
   if (args.length === 0) return initialFoods;
 
   let food: Food | null = null;
   let list: Food[] = [];
 
-  // تشخیص خودکار اینکه غذا کدام آرگومان است و لیست کدام است
   if (Array.isArray(args[0])) {
     list = args[0];
     food = args[1] && typeof args[1] === 'object' ? args[1] : null;
@@ -125,17 +200,14 @@ export function upsertFood(...args: any[]): Food[] {
     list = Array.isArray(args[1]) ? args[1] : [];
   }
 
-  // اگر غذای معتبری ارسال نشده بود
   if (!food || !food.id) {
     return list;
   }
 
   const existingIndex = list.findIndex((item: any) => item?.id === food.id);
   if (existingIndex === -1) {
-    // افزودن غذای جدید به ابتدای لیست
     return [food, ...list];
   }
 
-  // به‌روزرسانی غذای قبلی در صورت وجود
   return list.map((item: any) => (item?.id === food.id ? { ...item, ...food } : item));
 }
