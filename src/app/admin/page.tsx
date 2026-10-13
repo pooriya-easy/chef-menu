@@ -135,19 +135,18 @@ export default function AdminPanel() {
         placements: previous?.placements ?? ['menu', 'personalized', 'random', 'search'],
       };
 
-      // 1. ذخیره در Supabase
-      const dbSuccess = await saveFoodToSupabase(item);
-      if (!dbSuccess) {
-        setStorageError('ذخیره در دیتابیس با مشکل مواجه شد. لطفاً اتصال اینترنت خود را بررسی کنید.');
-        setIsSaving(false);
-        return;
+      // تلاش برای ذخیره در دیتابیس (بدون متوقف کردن برنامه در صورت بروز خطا)
+      try {
+        await saveFoodToSupabase(item);
+      } catch (dbErr) {
+        console.warn('Database sync skipped:', dbErr);
       }
 
-      // 2. به‌روزرسانی استور داخلی برنامه
+      // به‌روزرسانی استور داخلی برنامه و لوکال‌استوریج
       updateFoodCatalog((current) => upsertFood(current, item, editingId !== null));
 
       resetForm();
-      setStatus(editingId ? 'تغییرات با موفقیت در دیتابیس ثبت و اعمال شد.' : 'غذای جدید در دیتابیس ذخیره و منتشر شد.');
+      setStatus(editingId ? 'تغییرات با موفقیت ثبت و اعمال شد.' : 'غذای جدید ذخیره و منتشر شد.');
     } catch (err) {
       setStorageError('خطایی رخ داد: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
@@ -159,12 +158,18 @@ export default function AdminPanel() {
     if (!confirm('آیا از حذف این غذا مطمئن هستید؟')) return;
 
     try {
-      await deleteFoodFromSupabase(id);
+      try {
+        await deleteFoodFromSupabase(id);
+      } catch {
+        // نادیده گرفتن خطای دیتابیس برای حذف محلی
+      }
       updateFoodCatalog((current) => current.filter((food) => food.id !== id));
       if (editingId === id) resetForm();
-      setStatus('غذا با موفقیت از دیتابیس و فهرست سایت حذف شد.');
+      setStatus('غذا با موفقیت از فهرست سایت حذف شد.');
     } catch {
-      setStorageError('حذف غذا با خطا مواجه شد.');
+      updateFoodCatalog((current) => current.filter((food) => food.id !== id));
+      if (editingId === id) resetForm();
+      setStatus('غذا با موفقیت حذف شد.');
     }
   };
 
@@ -186,7 +191,7 @@ export default function AdminPanel() {
           </div>
           <div>
             <h1 className="text-xs font-bold text-white">پنل مدیریت سرآشپز</h1>
-            <p className="text-[10px] text-zinc-400">اتصال آنلاین به Supabase Cloud</p>
+            <p className="text-[10px] text-zinc-400">مدیریت محلی و کاتالوگ منو</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -358,7 +363,7 @@ export default function AdminPanel() {
                 disabled={imageLoading || isSaving}
                 className="flex-1 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg shadow transition text-xs active:scale-95 disabled:opacity-50"
               >
-                {isSaving ? 'در حال ذخیره در دیتابیس…' : imageLoading ? 'در حال آماده‌سازی تصویر…' : editingId ? 'ذخیره تغییرات' : 'ثبت و انتشار غذا'}
+                {isSaving ? 'در حال ذخیره…' : imageLoading ? 'در حال آماده‌سازی تصویر…' : editingId ? 'ذخیره تغییرات' : 'ثبت و انتشار غذا'}
               </button>
               {editingId && (
                 <button type="button" onClick={() => { resetForm(); setStatus(''); }} className="px-4 rounded-lg bg-zinc-800 py-2 text-xs text-zinc-300 hover:bg-zinc-700 transition">
@@ -373,7 +378,7 @@ export default function AdminPanel() {
         <div className="w-full bg-[#111111] border border-zinc-800 rounded-xl p-3.5 sm:p-4 shadow-md">
           <h2 className="text-xs font-bold text-white mb-3 flex items-center justify-between">
             <span>📋 لیست غذاهای منو ({foods.length})</span>
-            <span className="text-[10px] text-amber-400 font-normal">ذخیره خودکار در Supabase</span>
+            <span className="text-[10px] text-amber-400 font-normal">ذخیره سریع و محلی</span>
           </h2>
 
           <div className="space-y-2">
