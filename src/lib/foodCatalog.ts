@@ -288,6 +288,9 @@ export const initialFoods: Food[] = [
   }
 ];
 
+// تعریف alias برای هماهنگی با foodStore.ts
+export const defaultFoods: Food[] = initialFoods;
+
 /**
  * دریافت لیست تمام غذاها (ابتدا از Supabase، در صورت خطا یا خالی بودن از لیست محلی)
  */
@@ -325,7 +328,7 @@ export async function fetchFoodsFromSupabase(): Promise<Food[]> {
 export async function saveFoodToSupabase(food: Food): Promise<boolean> {
   try {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      return true; // حالت محلی موفق
+      return true;
     }
 
     const payload = {
@@ -342,7 +345,7 @@ export async function saveFoodToSupabase(food: Food): Promise<boolean> {
     const { error } = await supabase.from('foods').upsert(payload);
     if (error) {
       console.error('Supabase save error (falling back to local):', error.message);
-      return true; // برای اینکه پنل ادمین بدون دیتابیس هم کار کند خروجی true می‌دهیم
+      return true;
     }
     return true;
   } catch (err) {
