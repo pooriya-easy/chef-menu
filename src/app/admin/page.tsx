@@ -17,7 +17,7 @@ export default function AdminPanel() {
 
   // فرم افزودن غذا
   const [foodName, setFoodName] = useState('');
-  const [category, setCategory] = useState<FoodCategory>('غذای سنتی');
+  const [category, setCategory] = useState<FoodCategory>('سنتی');
   const [calories, setCalories] = useState('');
   const [cookingTime, setCookingTime] = useState('');
   const [instructions, setInstructions] = useState('');
@@ -56,7 +56,7 @@ export default function AdminPanel() {
     if (fileInput.current) fileInput.current.value = '';
     setEditingId(null);
     setFoodName('');
-    setCategory('غذای سنتی');
+    setCategory('سنتی');
     setCalories('');
     setCookingTime('');
     setInstructions('');
@@ -75,7 +75,7 @@ export default function AdminPanel() {
     setImageLoading(false);
     setEditingId(food.id);
     setFoodName(food.name || '');
-    setCategory(food.category || 'غذای سنتی');
+    setCategory(food.category || 'سنتی');
     setCalories(food.calories ? String(food.calories) : '');
     setCookingTime(food.cookingTime || '');
     setImageFile(food.image || '');
@@ -235,14 +235,18 @@ export default function AdminPanel() {
                   onChange={(e) => setCategory(e.target.value as FoodCategory)}
                   className="w-full px-2 py-1.5 bg-[#0a0a0a] border border-zinc-800 rounded-lg text-white text-xs focus:outline-none focus:border-amber-500 transition-colors"
                 >
-                  <option value="غذای سنتی">غذای سنتی</option>
-                  <option value="فست فود">فست فود</option>
+                  <option value="سنتی">سنتی</option>
+                  <option value="فست‌فود">فست‌فود</option>
                   <option value="غذای دریایی">غذای دریایی</option>
-                  <option value="پیش غذا">پیش غذا</option>
-                  <option value="سالاد">سالاد</option>
+                  <option value="غذای رژیمی">غذای رژیمی</option>
+                  <option value="پیش‌غذا">پیش‌غذا</option>
+                  <option value="فینگرفود">فینگرفود</option>
+                  <option value="سوپ">سوپ</option>
+                  <option value="سالاد مجلسی">سالاد مجلسی</option>
+                  <option value="سالاد رژیمی">سالاد رژیمی</option>
                   <option value="دسر">دسر</option>
-                  <option value="نوشیدنی سرد">نوشیدنی سرد</option>
-                  <option value="نوشیدنی گرم">نوشیدنی گرم</option>
+                  <option value="نوشیدنی‌های سرد">نوشیدنی‌های سرد</option>
+                  <option value="نوشیدنی‌های گرم">نوشیدنی‌های گرم</option>
                 </select>
               </div>
             </div>

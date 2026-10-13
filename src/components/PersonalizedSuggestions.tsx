@@ -1,123 +1,133 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
-import { useFoods } from '../lib/foodStore';
-import FoodImage from './FoodImage';
-import FoodRecipeDialog from './FoodRecipeDialog';
-
-type Interest =
-  | 'رژیمی'
-  | 'گیاهی'
-  | 'سریع و آسان'
-  | 'سنتی'
-  | 'دسر'
-  | 'پروتئینی';
-
-const INTERESTS: Interest[] = ['رژیمی', 'گیاهی', 'سریع و آسان', 'سنتی', 'دسر', 'پروتئینی'];
-
-function Pill({
-  active,
-  children,
-  onClick,
-}: {
-  active?: boolean;
-  children: React.ReactNode;
-  onClick?: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={[
-        'px-3 py-1.5 rounded-full text-sm transition border',
-        active
-          ? 'bg-[#FF7A00] text-zinc-950 border-[#FF7A00]'
-          : 'bg-[var(--surface)] text-zinc-200 border-zinc-700 hover:border-[#FF7A00]/60',
-      ].join(' ')}
-    >
-      {children}
-    </button>
-  );
-}
+import { useState } from "react";
+import Image from "next/image";
+import { useFoods } from "../lib/foodStore";
+import FoodRecipeDialog from "./FoodRecipeDialog";
 
 export default function PersonalizedSuggestions() {
   const foods = useFoods();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [selected, setSelected] = useState<Interest | 'همه'>('همه');
+  const [selectedDiet, setSelectedDiet] = useState<string>("همه");
+  const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
 
-  const filtered = useMemo(() => {
-  return foods.filter((food) => 
-    (food.placements ?? []).includes('personalized') && 
-    (selected === 'همه' || (food.tags ?? []).includes(selected))
-  );
-}, [foods, selected]);
+  const diets = [
+    { id: "همه", label: "همه غذاها" },
+    { id: "سریع", label: "کمتر از ۳۰ دقیقه" },
+    { id: "رژیمی", label: "کم‌کالری" },
+    { id: "ایرانی", label: "سنتی و اصیل" },
+  ];
+
+  // فیلتر هوشمند بر اساس نوع انتخاب
+  const filteredFoods = foods.filter((item) => {
+    if (selectedDiet === "سریع") {
+      const time = parseInt(item.cookingTime || "60", 10);
+      return !isNaN(time) && time <= 30;
+    }
+    if (selectedDiet === "رژیمی") {
+      const cal = parseInt(item.calories || "999", 10);
+      return !isNaN(cal) && cal <= 400;
+    }
+    if (selectedDiet === "ایرانی") {
+      return item.category === "غذای اصلی";
+    }
+    return true;
+  }).slice(0, 3);
+
   return (
-    <section className="w-full py-14 bg-background" dir="rtl">
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-              پیشنهادهای شخصی‌سازی‌شده
-            </h2>
-            <p className="mt-2 text-[var(--muted)]">
-              علایقت رو انتخاب کن تا غذاها و دسرهای مناسب‌تر بهت پیشنهاد بدیم.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <Pill active={selected === 'همه'} onClick={() => setSelected('همه')}>
-              همه
-            </Pill>
-            {INTERESTS.map((t) => (
-              <Pill key={t} active={selected === t} onClick={() => setSelected(t)}>
-                {t}
-              </Pill>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((item) => (
-            <article
-              key={item.id}
-              className="rounded-xl border border-zinc-700 bg-[var(--surface)] overflow-hidden shadow-sm hover:shadow-md transition"
-            >
-              <div className="relative h-36 overflow-hidden bg-[var(--surface-soft)]"><FoodImage food={item} /></div>
-
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="font-semibold text-foreground">{item.name}</h3>
-                  <span className="text-xs rounded-full px-2 py-1 bg-[#FF7A00]/10 text-[#FF7A00] border border-[#FF7A00]/20">
-                    {item.category}
-                  </span>
-                </div>
-
-                <div className="mt-3 flex items-center justify-between text-sm text-[var(--muted)]">
-                  <span>زمان: {item.cookingTime}</span>
-                  <span>کالری: {item.calories}</span>
-                </div>
-
-                <button
-                  type="button"
-                  aria-haspopup="dialog"
-                  onClick={() => setSelectedId(item.id)}
-                  className="mt-4 w-full rounded-xl bg-zinc-900 text-white py-2.5 hover:bg-zinc-800 transition"
-                >
-                  مشاهده دستور پخت
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {filtered.length === 0 && <p role="status" className="mt-6 text-sm text-[var(--muted)]">در این دسته غذایی وجود ندارد.</p>}
-        <FoodRecipeDialog foodId={selectedId} onClose={() => setSelectedId(null)} />
-        <div className="mt-8 rounded-xl border border-[#FF7A00]/20 bg-[var(--surface)] p-4 md:p-6">
-          <p className="text-zinc-300">
-            برای دیدن مواد لازم و مراحل آماده‌سازی، دستور پخت دلخواهتان را باز کنید.
+    <div className="max-w-6xl mx-auto px-4 py-8" dir="rtl">
+      {/* تیتر بخش پیشنهاد شخصی */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-4 border-b border-zinc-800 gap-4">
+        <div>
+          <span className="text-xs font-bold text-amber-500 uppercase tracking-wider bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+            پیشنهاد سرآشپز
+          </span>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-3">
+            پیشنهادهای شخصی‌سازی‌شده برای شما
+          </h2>
+          <p className="text-zinc-400 text-sm mt-1">
+            بر اساس سبک زندگی و علایق غذایی امروزتان انتخاب کنید.
           </p>
         </div>
+
+        {/* فیلترها */}
+        <div className="flex flex-wrap gap-2">
+          {diets.map((diet) => (
+            <button
+              key={diet.id}
+              onClick={() => setSelectedDiet(diet.id)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                selectedDiet === diet.id
+                  ? "bg-amber-500 text-black shadow-lg shadow-amber-500/20"
+                  : "bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700 hover:text-white"
+              }`}
+            >
+              {diet.label}
+            </button>
+          ))}
+        </div>
       </div>
-    </section>
+
+      {/* کارت‌های پیشنهاد غذا */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {filteredFoods.map((food) => (
+          <div
+            key={food.id}
+            onClick={() => setSelectedFoodId(food.id)}
+            className="group bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden hover:border-amber-500/50 transition-all cursor-pointer flex flex-col justify-between"
+          >
+            <div>
+              <div className="relative aspect-[16/10] w-full bg-zinc-950 overflow-hidden">
+                {food.image ? (
+                  <Image
+                    src={food.image}
+                    alt={food.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-4xl">
+                    🍲
+                  </div>
+                )}
+                <span className="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-amber-400 border border-amber-400/30 text-xs px-2.5 py-1 rounded-lg">
+                  {food.category}
+                </span>
+              </div>
+
+              <div className="p-5">
+                <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition mb-3">
+                  {food.name}
+                </h3>
+                <div className="flex items-center justify-between text-xs text-zinc-400">
+                  <span className="flex items-center gap-1">
+                    <span className="text-amber-500">🔥</span> {food.calories} کالری
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span>⏱</span> {food.cookingTime}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-5 pt-0">
+              <button
+                type="button"
+                className="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-amber-500 hover:text-black text-zinc-300 font-bold text-xs transition duration-300"
+              >
+                مشاهده دستور پخت
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* دیالوگ دستور پخت */}
+      {selectedFoodId && (
+        <FoodRecipeDialog
+          foodId={selectedFoodId}
+          onClose={() => setSelectedFoodId(null)}
+        />
+      )}
+    </div>
   );
 }
