@@ -9,7 +9,6 @@ export const foodCategories = [
   'نوشیدنی گرم',
 ] as const;
 
-// پشتیبانی از همه دسته‌بندی‌ها برای جلوگیری از ارور تایپ
 export type FoodCategory =
   | (typeof foodCategories)[number]
   | 'غذای اصلی'
@@ -41,7 +40,6 @@ export interface Food {
   [key: string]: any;
 }
 
-// تابع نرمال‌سازی متن برای جستجو
 export function normalizeFoodText(text: string): string {
   if (!text) return '';
   return text
@@ -80,46 +78,64 @@ export const initialFoods: Food[] = [
  * خواندن کاتالوگ غذاها از استوریج یا لیست اولیه
  */
 export function readFoodCatalog(rawSnapshot?: any): Food[] {
-  if (!rawSnapshot) {
+  if (rawSnapshot === null || rawSnapshot === undefined) {
     return [...initialFoods];
   }
+
   if (Array.isArray(rawSnapshot)) {
     return rawSnapshot;
   }
+
   try {
     const parsed = typeof rawSnapshot === 'string' ? JSON.parse(rawSnapshot) : rawSnapshot;
-    if (Array.isArray(parsed) && parsed.length > 0) {
+    if (Array.isArray(parsed)) {
       return parsed;
     }
   } catch {
-    // بازگشت لیست پیش‌فرض در صورت بروز خطا در پارس
+    // خطا در فرمت ذخیره‌شده
   }
+
   return [...initialFoods];
 }
 
-/** تبدیل فهرست غذاها به متن JSON */
+/** تبدیل فهرست غذاها به متن JSON با هندل کردن امن خطاها */
 export function serializeFoodCatalog(foods: any): string {
-  return JSON.stringify(foods, null, 2);
+  try {
+    return JSON.stringify(foods ?? []);
+  } catch {
+    return '[]';
+  }
 }
 
 /**
- * افزودن یا به‌روزرسانی غذا (پشتیبانی از هر نوع ورودی در ادمین)
+ * افزودن یا به‌روزرسانی غذا (پشتیبانی هوشمند از هر ترتیب ورودی در ادمین)
  */
-export function upsertFood(...args: any[]): any {
+export function upsertFood(...args: any[]): Food[] {
   if (args.length === 0) return initialFoods;
-  
-  // اگر ورودی اول یک آرایه از غذاها باشد
+
+  let food: Food | null = null;
+  let list: Food[] = [];
+
+  // تشخیص خودکار اینکه غذا کدام آرگومان است و لیست کدام است
   if (Array.isArray(args[0])) {
-    return args[0];
+    list = args[0];
+    food = args[1] && typeof args[1] === 'object' ? args[1] : null;
+  } else if (typeof args[0] === 'object' && args[0] !== null) {
+    food = args[0];
+    list = Array.isArray(args[1]) ? args[1] : [];
   }
 
-  // اگر غذا به صورت آبجکت تکی فرستاده شده باشد
-  const food = args[0];
-  const list = Array.isArray(args[1]) ? args[1] : initialFoods;
+  // اگر غذای معتبری ارسال نشده بود
+  if (!food || !food.id) {
+    return list;
+  }
 
-  const existingIndex = list.findIndex((item: any) => item.id === food.id);
+  const existingIndex = list.findIndex((item: any) => item?.id === food.id);
   if (existingIndex === -1) {
-    return [...list, food];
+    // افزودن غذای جدید به ابتدای لیست
+    return [food, ...list];
   }
-  return list.map((item: any) => (item.id === food.id ? food : item));
+
+  // به‌روزرسانی غذای قبلی در صورت وجود
+  return list.map((item: any) => (item?.id === food.id ? { ...item, ...food } : item));
 }

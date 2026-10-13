@@ -11,8 +11,8 @@ import Footer from "../components/Footer";
 
 const links = [
   { id: "home", label: "خانه", icon: "" },
-  { id: "smart-menu", label: "منوی هوشمند", icon: "" },
-  { id: "", label: " کالری اسکنر ", icon: "" },
+  { id: "smart-menu-link", label: "منوی هوشمند", icon: "" },
+  { id: "calorie-scanner", label: " کالری اسکنر ", icon: "" },
   { id: "random-food-section", label: "غذای تصادفی", icon: "" },
 ];
 
@@ -35,17 +35,18 @@ export default function Home() {
   useEffect(() => {
     const syncHash = () => {
       const id = window.location.hash.slice(1);
-      if (id === "smart-menu") {
-        router.replace("/smart-menu");
-        return;
+      // اصلاح: حذف ریدایرکت خودکار به صفحه دیگر و مدیریت وضعیت فعال
+      if (id) {
+        setActive(links.some((link) => link.id === id) ? id : "home");
+      } else {
+        setActive("home");
       }
-      setActive(links.some((link) => link.id === id) ? id : "home");
       setMenuOpen(false);
     };
     syncHash();
     window.addEventListener("hashchange", syncHash);
     return () => window.removeEventListener("hashchange", syncHash);
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -67,7 +68,7 @@ export default function Home() {
         if (event.key === "Escape" && menuOpen) { setMenuOpen(false); menuButton.current?.focus(); }
       }}>
         <div className="nav-container">
-          <a className="brand" href="#home" aria-label="Chef Menu — صفحه اصلی" onClick={() => setMenuOpen(false)}>
+          <a className="brand" href="#home" aria-label="Chef Menu — صفحه اصلی" onClick={() => { setActive("home"); setMenuOpen(false); }}>
             <span className="brand-mark"><Hat /></span>
             <span className="brand-name" dir="ltr">Chef Menu</span>
           </a>
@@ -75,17 +76,17 @@ export default function Home() {
             {links.map((link) => (
               <Link 
                 key={link.id} 
-                href={link.id === "smart-menu" ? "/smart-menu" : `#${link.id}`} 
+                href={link.id === "smart-menu-link" ? "/smart-menu" : `#${link.id}`} 
                 className={`nav-link ${active === link.id ? "active" : ""}`} 
                 aria-current={active === link.id ? "page" : undefined} 
                 onClick={() => { 
-                  if (link.id !== "smart-menu") setActive(link.id); 
+                  if (link.id !== "smart-menu-link") setActive(link.id); 
                   setMenuOpen(false); 
                 }}
               >
                 <span className="nav-icon" aria-hidden="true">{link.icon}</span>
                 <span>{link.label}</span>
-                {link.id === "smart-menu" && <span className="new-badge">جدید</span>}
+                {link.id === "smart-menu-link" && <span className="new-badge">جدید</span>}
               </Link>
             ))}
             <span className="mobile-note">یک همراه خوش‌سلیقه برای هر روز شما</span>
@@ -108,13 +109,13 @@ export default function Home() {
       </header>
 
       <main id="main" tabIndex={-1}>
-        {active === "home" || active === "random-food-section" ? (
+        {/* اصلاح شرط رندر برای اطمینان از نمایش محتوای اصلی در حالت home */}
+        {(active === "home" || active === "random-food-section" || active === "smart-menu-link" || active === "calorie-scanner") ? (
           <>
             <div id="home"><Hero /></div>
-            <SmartSearch />
+            <div id="smart-menu-link"><SmartSearch /></div>
             <PersonalizedSuggestions />
             
-            {/* شناسه برای اسکرول به بخش غذای تصادفی */}
             <div id="random-food-section">
               <RandomFoodSuggestion />
             </div>
@@ -134,7 +135,6 @@ export default function Home() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {/* کارت ۰۱ تا ۰۴ باقی مانده ... */}
                   <div className="group relative bg-zinc-900/80 border border-zinc-800 hover:border-amber-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between mb-4">
@@ -163,7 +163,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="group relative bg-zinc-900/80 border border-zinc-800 hover:border-amber-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 flex flex-col justify-between">
+                  <div id="calorie-scanner" className="group relative bg-zinc-900/80 border border-zinc-800 hover:border-amber-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between mb-4">
                         <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 font-bold text-lg border border-amber-500/20 group-hover:scale-110 transition-transform">۰۳</div>
@@ -191,7 +191,6 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* کارت ۰۵ - اصلاح لینک برای اسکرول */}
                   <div 
                     onClick={() => { setActive("random-food-section"); window.location.hash = "random-food-section"; }}
                     className="group relative bg-zinc-900/80 border border-zinc-800 hover:border-amber-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5 flex flex-col justify-between md:col-span-2 lg:col-span-1 cursor-pointer"
@@ -218,20 +217,12 @@ export default function Home() {
           <section className="feature-placeholder" id={active} aria-labelledby="feature-title">
             <h1 id="feature-title">{links.find((link) => link.id === active)?.label}</h1>
             <p>این بخش در مرحله‌ی بعدی شف منو آماده می‌شود. به‌زودی با ایده‌های خوشمزه کنار شما هستیم.</p>
-            <a href="#home" className="profile-button">بازگشت به خانه</a>
+            <button onClick={() => setActive("home")} className="profile-button">بازگشت به خانه</button>
           </section>
         )}
       </main>
 
       <Footer />
-
-      <dialog ref={dialog} className="profile-dialog" onClick={(event) => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
-        <button className="dialog-close" aria-label="بستن" onClick={() => dialog.current?.close()}>×</button>
-        <Hat />
-        <h2>به شف منو خوش آمدید</h2>
-        <p>ورود و پروفایل در مرحله‌ی بعدی فعال می‌شود.</p>
-        <button className="profile-button" onClick={() => dialog.current?.close()}>متوجه شدم</button>
-      </dialog>
     </>
   );
 }
