@@ -1,22 +1,19 @@
-import { supabase } from './supabaseClient';
-
 export const foodCategories = [
-  'غذای سنتی',
-  'فست فود',
+  'سنتی',
+  'فست‌فود',
   'غذای دریایی',
-  'پیش غذا',
-  'سالاد',
+  'غذای رژیمی',
+  'پیش‌غذا',
+  'فینگرفود',
+  'سوپ',
+  'سالاد مجلسی',
+  'سالاد رژیمی',
   'دسر',
-  'نوشیدنی سرد',
-  'نوشیدنی گرم',
+  'نوشیدنی‌های سرد',
+  'نوشیدنی‌های گرم',
 ] as const;
 
-export type FoodCategory =
-  | (typeof foodCategories)[number]
-  | 'غذای اصلی'
-  | 'پیش‌غذا'
-  | 'نوشیدنی'
-  | string;
+export type FoodCategory = (typeof foodCategories)[number] | string;
 
 export interface IngredientItem {
   name: string;
@@ -29,390 +26,305 @@ export interface Food {
   id: string;
   name: string;
   category: FoodCategory;
-  calories: any;
+  calories: number;
   cookTime?: string;
   cookingTime?: string;
   image: string;
-  ingredients: IngredientItem[];
-  instructions?: string[];
   servings?: number;
-  baseServings?: number;
-  tags?: string[];
-  placements?: string[];
-  [key: string]: any;
-}
-
-export function normalizeFoodText(text: string): string {
-  if (!text) return '';
-  return text
-    .trim()
-    .toLowerCase()
-    .replace(/[\u064B-\u065F]/g, '')
-    .replace(/ي/g, 'ی')
-    .replace(/ك/g, 'ک');
+  ingredients?: IngredientItem[];
+  instructions?: string[];
+  description?: string;
 }
 
 export const initialFoods: Food[] = [
   {
-    id: '1',
-    name: 'قورمه سبزی جاافتاده',
-    category: 'غذای سنتی',
+    id: 'ghormeh-sabzi',
+    name: 'قورمه سبزی مجلسی',
+    category: 'سنتی',
     calories: 450,
-    cookTime: '۱۲۰ دقیقه',
-    cookingTime: '۱۲۰ دقیقه',
+    cookingTime: '۱۸۰ دقیقه',
+    cookTime: '۱۸۰ دقیقه',
     image: '/images/ghormeh.jpg',
-    ingredients: [
-      { name: 'گوشت گوسفندی', amount: 300, quantity: 300, unit: 'گرم' },
-      { name: 'سبزی قورمه', amount: 400, quantity: 400, unit: 'گرم' },
-      { name: 'لوبیا قرمز', amount: 150, quantity: 150, unit: 'گرم' },
-      { name: 'لیمو عمانی', amount: 3, quantity: 3, unit: 'عدد' }
-    ],
-    instructions: [
-      'گوشت و پیاز را تفت دهید تا طلایی شود.',
-      'لوبیا و سبزی سرخ‌شده را اضافه کنید و آب جوش بریزید.',
-      'اجازه دهید با حرارت ملایم به مدت ۳ ساعت کاملاً جا بیفتد.'
-    ],
     servings: 4,
-    baseServings: 4,
-    tags: ['سنتی', 'ایرانی', 'خورشت'],
-    placements: ['منوی اصلی'],
+    description: 'خورشت اصیل ایرانی با گوشت تازه، سبزی سرخ‌شده خوش‌عطر و لیمو عمانی.',
+    ingredients: [
+      { name: 'گوشت گوسفندی یا گوساله', amount: 400, unit: 'گرم' },
+      { name: 'سبزی قورمه سرخ‌شده', amount: 400, unit: 'گرم' },
+      { name: 'لوبیا قرمز یا چیتی', amount: 150, unit: 'گرم' },
+    ],
+    instructions: [
+      'پیاز را نگینی خرد کرده و در روغن تفت دهید تا سبک و طلایی شود.',
+      'گوشت را اضافه کرده و همراه با زردچوبه و فلفل سیاه تفت دهید.',
+    ],
   },
   {
-    id: '2',
+    id: 'chelo-kabab',
     name: 'چلو کباب کوبیده',
-    category: 'غذای سنتی',
-    calories: 650,
-    cookTime: '۴۵ دقیقه',
+    category: 'سنتی',
+    calories: 680,
     cookingTime: '۴۵ دقیقه',
+    cookTime: '۴۵ دقیقه',
     image: '/images/kabab.jpg',
+    servings: 2,
+    description: 'کباب کوبیده زعفرانی خوش‌طعم و آبدار به همراه برنج ایرانی و کره.',
     ingredients: [
-      { name: 'گوشت چرخ‌کرده گوسفندی و گوساله', amount: 500, quantity: 500, unit: 'گرم' },
-      { name: 'پیاز رنده شده', amount: 150, quantity: 150, unit: 'گرم' },
-      { name: 'برنج ایرانی', amount: 400, quantity: 400, unit: 'گرم' },
-      { name: 'کره', amount: 50, quantity: 50, unit: 'گرم' }
+      { name: 'گوشت چرخ‌کرده', amount: 500, unit: 'گرم' },
+      { name: 'پیاز رنده‌شده', amount: 2, unit: 'عدد' },
     ],
     instructions: [
-      'گوشت را با پیاز آب‌گرفته، نمک و فلفل خوب ورز دهید.',
-      'گوشت را به سیخ بکشید و روی آتش یا در فر کباب کنید.',
-      'برنج را آبکش کرده و دم بگذارید.'
+      'گوشت را با پیاز و ادویه ورز دهید.',
+      'به سیخ کشیده و کباب کنید.',
     ],
-    servings: 3,
-    baseServings: 3,
-    tags: ['سنتی', 'کباب', 'مجلسی'],
-    placements: ['منوی اصلی'],
   },
   {
-    id: '3',
-    name: 'پیتزا پپرونی مخصوص',
-    category: 'فست فود',
-    calories: 780,
-    cookTime: '۳۰ دقیقه',
+    id: 'pasta-alfredo',
+    name: 'پاستا پنه آلفردو',
+    category: 'فست‌فود',
+    calories: 540,
     cookingTime: '۳۰ دقیقه',
-    image: '/images/pizza.jpg',
+    cookTime: '۳۰ دقیقه',
+    image: '/images/pasta.jpg',
+    servings: 2,
+    description: 'پاستای لذیذ با فیله مرغ گریل، قارچ تفت‌داده شده و سس خامه و پارمزان.',
     ingredients: [
-      { name: 'خمیر پیتزا', amount: 1, quantity: 1, unit: 'عدد' },
-      { name: 'سالبامی یا پپرونی', amount: 200, quantity: 200, unit: 'گرم' },
-      { name: 'پنیر موزارلا رنده شده', amount: 250, quantity: 250, unit: 'گرم' },
-      { name: 'سس گوجه‌فرنگی', amount: 4, quantity: 4, unit: 'قاشق غذاخوری' }
+      { name: 'پاستا پنه', amount: 250, unit: 'گرم' },
+      { name: 'سینه مرغ', amount: 200, unit: 'گرم' },
     ],
     instructions: [
-      'روی خمیر پیتزا سس گوجه‌فرنگی بمالید.',
-      'پنیر موزارلا و ورقه‌های پپرونی را به طور یکنواخت روی آن بچینید.',
-      'در فر با دمای ۲۲۰ درجه سانتی‌گراد به مدت ۲۰ دقیقه بپزید تا پنیر طلایی شود.'
+      'پاستا را پخته و آبکش کنید.',
+      'مرغ و قارچ را با خامه مخلوط کنید.',
     ],
-    servings: 2,
-    baseServings: 2,
-    tags: ['فست فود', 'پیتزا', 'ایتالیایی'],
-    placements: ['فست‌فود'],
   },
   {
-    id: '4',
-    name: 'همبرگر ذغالی دستی',
-    category: 'فست فود',
-    calories: 620,
-    cookTime: '۲۵ دقیقه',
+    id: 'pizza-pepperoni',
+    name: 'پیتزا مخصوص سرآشپز',
+    category: 'فست‌فود',
+    calories: 720,
     cookingTime: '۲۵ دقیقه',
-    image: '/images/burger.jpg',
+    cookTime: '۲۵ دقیقه',
+    image: '/images/pizza.jpg',
+    servings: 2,
+    description: 'پیتزای خوش‌طعم با پنیر موزارلای کش‌دار و پپرونی.',
     ingredients: [
-      { name: 'گوشت چرخ‌کرده چرب', amount: 400, quantity: 400, unit: 'گرم' },
-      { name: 'نان همبرگر', amount: 2, quantity: 2, unit: 'عدد' },
-      { name: 'سس مخصوص', amount: 3, quantity: 3, unit: 'قاشق غذاخوری' },
-      { name: 'خیارشور و گوجه', amount: 100, quantity: 100, unit: 'گرم' }
+      { name: 'خمیر پیتزا', amount: 1, unit: 'عدد' },
+      { name: 'پنیر موزارلا', amount: 200, unit: 'گرم' },
     ],
     instructions: [
-      'گوشت را شکل داده و گریل یا سرخ کنید.',
-      'نان همبرگر را تست کرده و مواد را همراه سس وسط آن بچینید.'
+      'سس و پنیر را روی خمیر بریزید.',
+      'در فر بپزید.',
     ],
-    servings: 2,
-    baseServings: 2,
-    tags: ['فست فود', 'برگر'],
-    placements: ['فست‌فود'],
   },
   {
-    id: '5',
-    name: 'ماهی قزل‌آلا گریل شده',
+    id: 'grilled-salmon',
+    name: 'ماهی قزل‌آلا و سالمون گریل',
     category: 'غذای دریایی',
     calories: 380,
-    cookTime: '۳۰ دقیقه',
-    cookingTime: '۳۰ دقیقه',
+    cookingTime: '۲۵ دقیقه',
+    cookTime: '۲۵ دقیقه',
     image: '/images/fish.jpg',
+    servings: 1,
+    description: 'فیله ماهی مرینیت‌شده با روغن زیتون و رزماری.',
     ingredients: [
-      { name: 'فیله ماهی قزل‌آلا', amount: 1, quantity: 1, unit: 'عدد' },
-      { name: 'روغن زیتون', amount: 2, quantity: 2, unit: 'قاشق غذاخوری' },
-      { name: 'لیمو ترش', amount: 1, quantity: 1, unit: 'عدد' },
-      { name: 'سیر رنده شده', amount: 2, quantity: 2, unit: 'حبه' }
+      { name: 'فیله ماهی', amount: 250, unit: 'گرم' },
     ],
     instructions: [
-      'ماهی را با روغن زیتون، سیر، نمک و فلفل مزه‌دار کنید.',
-      'در تابه گریل یا فر به مدت ۱۵ دقیقه هر طرف را بپزید.'
+      'ماهی را مزه‌دار کرده و گریل کنید.',
     ],
-    servings: 2,
-    baseServings: 2,
-    tags: ['دریایی', 'سلامت', 'رژیمی'],
-    placements: ['منوی اصلی'],
   },
   {
-    id: '6',
-    name: 'سوپ جو سفید',
-    category: 'پیش غذا',
-    calories: 220,
-    cookTime: '۵۰ دقیقه',
-    cookingTime: '۵۰ دقیقه',
-    image: '/images/soup.jpg',
+    id: 'kashk-bademjan',
+    name: 'کشک بادمجان سنتی',
+    category: 'پیش‌غذا',
+    calories: 310,
+    cookingTime: '۴۰ دقیقه',
+    cookTime: '۴۰ دقیقه',
+    image: '/images/kashk.jpg',
+    servings: 3,
+    description: 'بادمجان کبابی نرم به همراه کشک غلیظ.',
     ingredients: [
-      { name: 'جو پرک', amount: 100, quantity: 100, unit: 'گرم' },
-      { name: 'هویج نگینی', amount: 1, quantity: 1, unit: 'عدد' },
-      { name: 'شیر', amount: 1, quantity: 1, unit: 'فنجان' },
-      { name: 'سینه مرغ پخته', amount: 150, quantity: 150, unit: 'گرم' }
+      { name: 'بادمجان', amount: 5, unit: 'عدد' },
+      { name: 'کشک', amount: 4, unit: 'قاشق' },
     ],
     instructions: [
-      'جو و هویج را با آب مرغ بپزید.',
-      'شیر و مرغ ریش‌ریش شده را اضافه کرده و بگذارید جا بیفتد.'
+      'بادمجان را له کرده و با کشک تفت دهید.',
     ],
-    servings: 4,
-    baseServings: 4,
-    tags: ['پیش غذا', 'سوپ'],
-    placements: ['پیش‌غذا'],
   },
   {
-    id: '7',
-    name: 'سالاد سزار با مرغ گریل',
-    category: 'سالاد',
-    calories: 350,
-    cookTime: '۲۰ دقیقه',
-    cookingTime: '۲۰ دقیقه',
-    image: '/images/caesar.jpg',
-    ingredients: [
-      { name: 'کاهو رسمی خردشده', amount: 1, quantity: 1, unit: 'بوته' },
-      { name: 'سینه مرغ گریل‌شده', amount: 200, quantity: 200, unit: 'گرم' },
-      { name: 'نان تست برشته (کروزان)', amount: 50, quantity: 50, unit: 'گرم' },
-      { name: 'پنیر پارمسان', amount: 40, quantity: 40, unit: 'گرم' }
-    ],
-    instructions: [
-      'کاهو، مرغ گریل‌شده و نان تست را در ظرف مخلوط کنید.',
-      'سس مخصوص سزار و پنیر پارمسان را روی آن بریزید.'
-    ],
-    servings: 2,
-    baseServings: 2,
-    tags: ['سالاد', 'رژیمی', 'پیش غذا'],
-    placements: ['پیش‌غذا', 'سالاد'],
-  },
-  {
-    id: '8',
-    name: 'کیک شکلاتی خیس',
-    category: 'دسر',
-    calories: 520,
-    cookTime: '۶۰ دقیقه',
-    cookingTime: '۶۰ دقیقه',
-    image: '/images/cake.jpg',
-    ingredients: [
-      { name: 'آرد قنادی', amount: 2, quantity: 2, unit: 'فنجان' },
-      { name: 'پودر کاکائو', amount: 0.5, quantity: 0.5, unit: 'فنجان' },
-      { name: 'شکر', amount: 1.5, quantity: 1.5, unit: 'فنجان' },
-      { name: 'شیر', amount: 1, quantity: 1, unit: 'فنجان' }
-    ],
-    instructions: [
-      'مواد خشک را الک کرده و با شیر و روغن مخلوط کنید.',
-      'در فر با دمای ۱۸۰ درجه به مدت ۴۰ دقیقه بپزید و سس شکلاتی روی آن بریزید.'
-    ],
-    servings: 6,
-    baseServings: 6,
-    tags: ['دسر', 'شیرینی', 'شکلاتی'],
-    placements: ['دسر'],
-  },
-  {
-    id: '9',
-    name: 'نوشیدنی موهیتو نعناع',
-    category: 'نوشیدنی سرد',
-    calories: 120,
-    cookTime: '۱۰ دقیقه',
-    cookingTime: '۱۰ دقیقه',
-    image: '/images/mojito.jpg',
-    ingredients: [
-      { name: 'برگ نعناع تازه', amount: 15, quantity: 15, unit: 'برگ' },
-      { name: 'لیمو ترش تازه', amount: 2, quantity: 2, unit: 'عدد' },
-      { name: 'سودا یا آب گازدار', amount: 1, quantity: 1, unit: 'لیوان' },
-      { name: 'یخ خردشده', amount: 1, quantity: 1, unit: 'فنجان' }
-    ],
-    instructions: [
-      'برگ نعناع و لیمو را کمی له کنید تا عطرشان آزاد شود.',
-      'یخ و آب گازدار را اضافه کرده و سرو کنید.'
-    ],
-    servings: 2,
-    baseServings: 2,
-    tags: ['نوشیدنی', 'سرد', 'خنک'],
-    placements: ['نوشیدنی'],
-  },
-  {
-    id: '10',
-    name: 'چای ماسالا سنتی',
-    category: 'نوشیدنی گرم',
-    calories: 140,
-    cookTime: '۱۵ دقیقه',
+    id: 'salad-shirazi',
+    name: 'سالاد شیرازی تازه',
+    category: 'سالاد مجلسی',
+    calories: 90,
     cookingTime: '۱۵ دقیقه',
-    image: '/images/masala.jpg',
+    cookTime: '۱۵ دقیقه',
+    image: '/images/salad.jpg',
+    servings: 3,
+    description: 'ترکیب نگینی خیار، گوجه و پیاز.',
     ingredients: [
-      { name: 'چای سیاه', amount: 2, quantity: 2, unit: 'قاشق چای‌خوری' },
-      { name: 'شیر', amount: 1, quantity: 1, unit: 'لیوان' },
-      { name: 'پودر دارچین و هل', amount: 1, quantity: 1, unit: 'قاشق چای‌خوری' },
-      { name: 'زنجبیل تازه', amount: 1, quantity: 1, unit: 'تکه کوچک' }
+      { name: 'خیار و گوجه', amount: 6, unit: 'عدد' },
     ],
     instructions: [
-      'ادویه‌ها و چای را با آب بجوشانید.',
-      'شیر را اضافه کرده و اجازه دهید چند جوش بزند.'
+      'مواد را نگینی خرد کرده و با آبغوره مخلوط کنید.',
     ],
+  },
+  {
+    id: 'chocolate-cake',
+    name: 'کیک شکلاتی لاوا',
+    category: 'دسر',
+    calories: 420,
+    cookingTime: '۲۰ دقیقه',
+    cookTime: '۲۰ دقیقه',
+    image: '/images/cake.jpg',
     servings: 2,
-    baseServings: 2,
-    tags: ['نوشیدنی', 'گرم', 'کافه'],
-    placements: ['نوشیدنی'],
-  }
+    description: 'کیک شکلاتی داغ با هسته شکلات مذاب.',
+    ingredients: [
+      { name: 'شکلات', amount: 100, unit: 'گرم' },
+    ],
+    instructions: [
+      'مواد را مخلوط کرده و در فر قرار دهید.',
+    ],
+  },
+  {
+    id: 'fresh-mojito',
+    name: 'موهیتو نعناع و لیمو طبیعی',
+    category: 'نوشیدنی‌های سرد',
+    calories: 110,
+    cookingTime: '۱۰ دقیقه',
+    cookTime: '۱۰ دقیقه',
+    image: '/images/mojito.jpg',
+    servings: 1,
+    description: 'نوشیدنی خنک و گازدار با نعناع و لیمو.',
+    ingredients: [
+      { name: 'نعناع و لیمو', amount: 1, unit: 'بسته' },
+    ],
+    instructions: [
+      'نعناع و لیمو را کوبیده و با سودا مخلوط کنید.',
+    ],
+  },
+  {
+    id: 'cappuccino-coffee',
+    name: 'قهوه کاپوچینو / لاته آرت',
+    category: 'نوشیدنی‌های گرم',
+    calories: 130,
+    cookingTime: '۱۰ دقیقه',
+    cookTime: '۱۰ دقیقه',
+    image: '/images/coffee.jpg',
+    servings: 1,
+    description: 'اسپرسوی غلیظ با شیر فوم‌گرفته.',
+    ingredients: [
+      { name: 'اسپرسو', amount: 1, unit: 'شات' },
+    ],
+    instructions: [
+      'شیر را فوم‌گرفته و روی اسپرسو بریزید.',
+    ],
+  },
+  {
+    id: 'classic-burger',
+    name: 'برگر کلاسیک با سیب‌زمینی',
+    category: 'فست‌فود',
+    calories: 690,
+    cookingTime: '۲۵ دقیقه',
+    cookTime: '۲۵ دقیقه',
+    image: '/images/burger.jpg',
+    servings: 1,
+    description: 'برگر دست‌ساز با پنیر چدار.',
+    ingredients: [
+      { name: 'گوشت برگر', amount: 180, unit: 'گرم' },
+    ],
+    instructions: [
+      'برگر را سرخ کرده و در نان قرار دهید.',
+    ],
+  },
+  {
+    id: 'zereshk-polo',
+    name: 'زرشک پلو با مرغ مجلسی',
+    category: 'سنتی',
+    calories: 620,
+    cookingTime: '۹۰ دقیقه',
+    cookTime: '۹۰ دقیقه',
+    image: '/images/zereshk.jpg',
+    servings: 2,
+    description: 'مرغ زعفرانی با برنج و زرشک.',
+    ingredients: [
+      { name: 'مرغ و برنج', amount: 1, unit: 'پرس' },
+    ],
+    instructions: [
+      'مرغ را پخته و با برنج و زرشک سرو کنید.',
+    ],
+  },
 ];
 
-// تعریف alias برای هماهنگی با foodStore.ts
 export const defaultFoods: Food[] = initialFoods;
+const STORAGE_KEY = 'chef_menu_custom_foods_v1';
 
-/**
- * دریافت لیست تمام غذاها (ابتدا از Supabase، در صورت خطا یا خالی بودن از لیست محلی)
- */
-export async function fetchFoodsFromSupabase(): Promise<Food[]> {
+export function readFoodCatalog(): Food[] {
+  if (typeof window === 'undefined') return initialFoods;
   try {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      return [...initialFoods];
-    }
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return initialFoods;
+    
+    const parsed = JSON.parse(saved);
+    if (!Array.isArray(parsed)) return initialFoods;
 
-    const { data, error } = await supabase
-      .from('foods')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error || !data || data.length === 0) {
-      return [...initialFoods];
-    }
-
-    return data.map((item: any) => ({
-      ...item,
-      id: String(item.id),
-      cookingTime: item.cookingTime || item.cookTime || '۳۰ دقیقه',
-      cookTime: item.cookTime || item.cookingTime || '۳۰ دقیقه',
-      ingredients: Array.isArray(item.ingredients) ? item.ingredients : [],
-      instructions: Array.isArray(item.instructions) ? item.instructions : [],
-    }));
-  } catch (err) {
-    return [...initialFoods];
+    const customFoods = parsed.filter(
+      (item: Food) => item && item.id && !initialFoods.some((def) => def.id === item.id)
+    );
+    
+    const combined = [...initialFoods, ...customFoods];
+    return combined.length > 0 ? combined : initialFoods;
+  } catch (e) {
+    console.error('Error reading catalog', e);
+    return initialFoods;
   }
 }
 
-/**
- * ذخیره یا به‌روزرسانی یک غذا
- */
-export async function saveFoodToSupabase(food: Food): Promise<boolean> {
-  try {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      return true;
-    }
-
-    const payload = {
-      id: String(food.id),
-      name: food.name ?? '',
-      category: food.category ?? 'غذای سنتی',
-      calories: String(food.calories ?? ''),
-      cookingTime: food.cookingTime || food.cookTime || '',
-      image: food.image ?? '',
-      ingredients: food.ingredients ?? [],
-      instructions: food.instructions ?? [],
-    };
-
-    const { error } = await supabase.from('foods').upsert(payload);
-    if (error) {
-      console.error('Supabase save error (falling back to local):', error.message);
-      return true;
-    }
-    return true;
-  } catch (err) {
-    return true;
-  }
+export function serializeFoodCatalog(foods: Food[]): string {
+  return JSON.stringify(foods);
 }
 
-/**
- * حذف یک غذا
- */
-export async function deleteFoodFromSupabase(foodId: string): Promise<boolean> {
-  try {
-    await supabase.from('foods').delete().eq('id', String(foodId));
-    return true;
-  } catch (err) {
-    return true;
-  }
+export function getFoodCatalog(): Food[] {
+  return readFoodCatalog();
 }
 
-export function readFoodCatalog(rawSnapshot?: any): Food[] {
-  if (rawSnapshot === null || rawSnapshot === undefined) {
-    return [...initialFoods];
+export async function upsertFood(food: Food): Promise<Food> {
+  const current = readFoodCatalog();
+  const index = current.findIndex((f) => f.id === food.id);
+  let updated: Food[];
+  if (index >= 0) {
+    updated = [...current];
+    updated[index] = food;
+  } else {
+    updated = [food, ...current];
   }
-  if (Array.isArray(rawSnapshot)) {
-    return rawSnapshot;
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   }
-  try {
-    const parsed = typeof rawSnapshot === 'string' ? JSON.parse(rawSnapshot) : rawSnapshot;
-    if (Array.isArray(parsed)) {
-      return parsed;
-    }
-  } catch {
-    // خطا در پارس
-  }
-  return [...initialFoods];
+  return food;
 }
 
-export function serializeFoodCatalog(foods: any): string {
-  try {
-    return JSON.stringify(foods ?? []);
-  } catch {
-    return '[]';
-  }
+export async function saveFoodToSupabase(food: Food): Promise<Food> {
+  return upsertFood(food);
 }
 
-export function upsertFood(...args: any[]): Food[] {
-  if (args.length === 0) return initialFoods;
-
-  let food: Food | null = null;
-  let list: Food[] = [];
-
-  if (Array.isArray(args[0])) {
-    list = args[0];
-    food = args[1] && typeof args[1] === 'object' ? args[1] : null;
-  } else if (typeof args[0] === 'object' && args[0] !== null) {
-    food = args[0];
-    list = Array.isArray(args[1]) ? args[1] : [];
+export async function deleteFoodFromSupabase(id: string): Promise<boolean> {
+  const current = readFoodCatalog();
+  const updated = current.filter((f) => f.id !== id);
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   }
+  return true;
+}
 
-  if (!food || !food.id) {
-    return list;
-  }
+export function searchFoods(query: string, category?: string): Food[] {
+  const foods = readFoodCatalog();
+  return foods.filter((food) => {
+    const matchesQuery =
+      !query ||
+      food.name.toLowerCase().includes(query.toLowerCase()) ||
+      (food.description && food.description.toLowerCase().includes(query.toLowerCase()));
 
-  const existingIndex = list.findIndex((item: any) => item?.id === food.id);
-  if (existingIndex === -1) {
-    return [food, ...list];
-  }
+    const matchesCategory =
+      !category || category === 'همه' || food.category === category;
 
-  return list.map((item: any) => (item?.id === food.id ? { ...item, ...food } : item));
+    return matchesQuery && matchesCategory;
+  });
 }

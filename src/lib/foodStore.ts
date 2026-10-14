@@ -7,21 +7,34 @@ import type { Food } from "./foodCatalog";
 export const foodStorageKey = "admin_foods";
 export const foodUpdateEvent = "admin-foods-updated";
 
-export function getFoodSnapshot() {
-  try { 
+export function getFoodSnapshot(): string {
+  try {
     const stored = window.localStorage.getItem(foodStorageKey);
-    // اگر لوکال‌استوریج خالی بود، به طور خودکار پیش‌فرض‌ها را ذخیره و برمی‌گردانیم
+    
+    // اگر اصلاً چیزی ذخیره نشده بود یا مقدار خالی ذخیره شده بود
     if (!stored) {
       const initialSerialized = serializeFoodCatalog(defaultFoods);
       window.localStorage.setItem(foodStorageKey, initialSerialized);
       return initialSerialized;
     }
+
+    // بررسی اینکه آیا آرایه ذخیره‌شده خالی است یا نه
+    const parsed = readFoodCatalog(stored);
+    if (!parsed || parsed.length === 0) {
+      const initialSerialized = serializeFoodCatalog(defaultFoods);
+      window.localStorage.setItem(foodStorageKey, initialSerialized);
+      return initialSerialized;
+    }
+
     return stored;
-  } catch { 
-    return serializeFoodCatalog(defaultFoods); 
+  } catch {
+    return serializeFoodCatalog(defaultFoods);
   }
 }
-function getServerSnapshot() { return serializeFoodCatalog(defaultFoods); }
+
+function getServerSnapshot(): string {
+  return serializeFoodCatalog(defaultFoods);
+}
 
 export function subscribeToFoods(onChange: () => void) {
   const onStorage = (event: StorageEvent) => {
@@ -43,9 +56,9 @@ export function useFoods() {
 }
 
 export function updateFoodCatalog(update: (foods: Food[]) => Food[]) {
-  // Always read the latest snapshot, including edits made in another tab.
   const current = readFoodCatalog(window.localStorage.getItem(foodStorageKey));
-  const next = update(current);
+  const safeCurrent = (!current || current.length === 0) ? defaultFoods : current;
+  const next = update(safeCurrent);
   window.localStorage.setItem(foodStorageKey, serializeFoodCatalog(next));
   window.dispatchEvent(new Event(foodUpdateEvent));
 }

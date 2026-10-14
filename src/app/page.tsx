@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Hero from "../components/Hero";
 import PersonalizedSuggestions from "../components/PersonalizedSuggestions";
 import RandomFoodSuggestion from "../components/RandomFoodSuggestion";
@@ -14,15 +15,6 @@ const links = [
   { id: "calorie-scanner", label: " کالری اسکنر ", icon: "" },
   { id: "random-food-section", label: "غذای تصادفی", icon: "" },
 ];
-
-function Hat({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M7 15a5 5 0 0 1-2-9 5 5 0 0 1 9-2 5 5 0 0 1 9-2 5 5 0 0 1 5 9v7H7Z" />
-      <path d="M7 16h12M11 9v3m4-3v3" />
-    </svg>
-  );
-}
 
 export default function Home() {
   const router = useRouter();
@@ -50,7 +42,17 @@ export default function Home() {
       <header className="site-header" dir="rtl">
         <div className="nav-container">
           <Link className="brand" href="/" aria-label="Chef Menu — صفحه اصلی" onClick={() => { setActive("home"); setMenuOpen(false); }}>
-            <span className="brand-mark"><Hat /></span>
+            <span className="brand-mark">
+<div className="w-9 h-9 flex items-center justify-center bg-[#09090B] rounded-lg">
+  <Image 
+    src="/chef-logo.webp" 
+    alt="لوگوی کلاه آشپزی" 
+    width={100} 
+    height={100} 
+    className="object-contain"
+  />
+</div>
+            </span>
             <span className="brand-name" dir="ltr">Chef Menu</span>
           </Link>
           <nav id="main-navigation" className={`navigation ${menuOpen ? "is-open" : ""}`} aria-label="منوی اصلی">
