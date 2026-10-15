@@ -25,7 +25,7 @@ export default function SmartMenuPage() {
   };
 
   // فیلتر هوشمند آیتم‌ها
-  const filteredFoods = foods.filter((food) => {
+  const filteredFoods = foods.filter((food: any) => {
     if (!food) return false;
     
     const name = (food.name || "").toLowerCase();
@@ -98,10 +98,7 @@ export default function SmartMenuPage() {
         {/* هدر */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <span className="text-amber-500 text-xs font-bold tracking-wider">
-              CHEF MENU / با سلیقه خودت انتخاب کن
-            </span>
-            <h1 className="text-3xl md:text-4xl font-extrabold mt-1 text-white flex items-center gap-2">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-white flex items-center gap-2">
               <span>✦</span> منوی هوشمند
             </h1>
             <p className="text-zinc-400 text-sm mt-2">
@@ -177,7 +174,7 @@ export default function SmartMenuPage() {
 
         {/* لیست کارت‌ها */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {filteredFoods.map((item) => (
+          {filteredFoods.map((item: any) => (
             <div
               key={item?.id}
               onClick={() => setSelectedFoodId(String(item?.id))}

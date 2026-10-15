@@ -12,7 +12,7 @@ import Footer from "../components/Footer";
 const links = [
   { id: "home", label: "خانه", icon: "" },
   { id: "smart-menu-link", label: "منوی هوشمند", icon: "" },
-  { id: "calorie-scanner", label: " کالری اسکنر ", icon: "" },
+  { id: "calorie-scanner", label: "کالری اسکنر", icon: "" },
   { id: "random-food-section", label: "غذای تصادفی", icon: "" },
 ];
 
@@ -43,34 +43,38 @@ export default function Home() {
         <div className="nav-container">
           <Link className="brand" href="/" aria-label="Chef Menu — صفحه اصلی" onClick={() => { setActive("home"); setMenuOpen(false); }}>
             <span className="brand-mark">
-<div className="w-9 h-9 flex items-center justify-center bg-[#09090B] rounded-lg">
-  <Image 
-    src="/chef-logo.webp" 
-    alt="لوگوی کلاه آشپزی" 
-    width={100} 
-    height={100} 
-    className="object-contain"
-  />
-</div>
+              {/* کلاه آشپزی سفید بدون قاب مربعی */}
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-white" aria-hidden="true">
+                <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 10.18 0A4 4 0 0 1 18 13.87V21H6Z" />
+                <line x1="6" y1="17" x2="18" y2="17" />
+                <line x1="10" y1="9" x2="10" y2="14" />
+                <line x1="14" y1="9" x2="14" y2="14" />
+              </svg>
             </span>
             <span className="brand-name" dir="ltr">Chef Menu</span>
           </Link>
           <nav id="main-navigation" className={`navigation ${menuOpen ? "is-open" : ""}`} aria-label="منوی اصلی">
-            {links.map((link) => (
-              <Link 
-                key={link.id} 
-                href={link.id === "smart-menu-link" ? "/smart-menu" : `#${link.id}`} 
-                className={`nav-link ${active === link.id ? "active" : ""}`} 
-                onClick={() => { 
-                  if (link.id !== "smart-menu-link") setActive(link.id); 
-                  setMenuOpen(false); 
-                }}
-              >
-                <span className="nav-icon" aria-hidden="true">{link.icon}</span>
-                <span>{link.label}</span>
-                {link.id === "smart-menu-link" && <span className="new-badge">جدید</span>}
-              </Link>
-            ))}
+            {links.map((link) => {
+              let href = `#${link.id}`;
+              if (link.id === "smart-menu-link") href = "/smart-menu";
+              if (link.id === "calorie-scanner") href = "/calorie-scanner";
+
+              return (
+                <Link 
+                  key={link.id} 
+                  href={href} 
+                  className={`nav-link ${active === link.id ? "active" : ""}`} 
+                  onClick={() => { 
+                    if (link.id !== "smart-menu-link" && link.id !== "calorie-scanner") setActive(link.id); 
+                    setMenuOpen(false); 
+                  }}
+                >
+                  <span className="nav-icon" aria-hidden="true">{link.icon}</span>
+                  <span>{link.label}</span>
+                  {(link.id === "smart-menu-link" || link.id === "calorie-scanner") && <span className="new-badge">جدید</span>}
+                </Link>
+              );
+            })}
           </nav>
           <div className="nav-actions">
             <Link href="/login" className="profile-button" aria-label="ورود / حساب کاربری">
@@ -93,7 +97,7 @@ export default function Home() {
         {/* ۱. بخش هیرو (تصویر بشقاب غذا) */}
         <div id="home"><Hero /></div>
         
-        {/* ۲. بخش پیشنهادهای شخصی‌سازی‌شده دقیقاً همانند تصویر ارسالی */}
+        {/* ۲. بخش پیشنهادهای شخصی‌سازی‌شده */}
         <section className="w-full py-8 bg-zinc-950">
           <PersonalizedSuggestions />
         </section>
@@ -103,29 +107,43 @@ export default function Home() {
           <RandomFoodSuggestion />
         </div>
 
-        {/* ۴. امکانات ویژه */}
-        <section className="py-16 px-4 bg-zinc-950 text-zinc-100">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                امکانات ویژه
+        {/* ۴. کارت طراح و سازنده سایت - اصلاح رنگ پس‌زمینه برای یکدستی کامل */}
+        <section className="w-full py-12 px-6 bg-zinc-950 flex justify-center" dir="rtl">
+          <div className="relative w-full max-w-6xl bg-zinc-900 border border-zinc-800 rounded-3xl p-8 md:p-10 shadow-2xl hover:border-amber-500/40 transition">
+            
+            {/* برچسب گوشه بالا سمت راست */}
+            <div className="absolute top-6 left-6 md:top-8 md:left-8">
+              <span className="px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs md:text-sm font-bold tracking-wide">
+                طراح و سازنده سایت ✦
               </span>
-              <h2 className="text-2xl md:text-3xl font-extrabold mt-3 tracking-tight">
-                امکانات ویژه سرآشپز من
-              </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="group relative bg-zinc-900/80 border border-zinc-800 hover:border-amber-500/50 rounded-2xl p-6 transition-all">
-                <h3 className="text-lg font-bold text-zinc-100 mb-2">انتخاب هوشمندانه غذا</h3>
-                <p className="text-zinc-400 text-sm mb-4">غذای دلخواهت را انتخاب کن و تعداد نفرات را تنظیم کن.</p>
-                <Link href="/smart-menu" className="text-xs font-medium text-amber-400">ورود به منوی هوشمند ←</Link>
+            <div className="flex flex-col md:flex-row items-center gap-8 mt-2 md:mt-0">
+              {/* آواتار / عکس سازنده */}
+              <div className="w-28 h-28 md:w-32 md:h-32 rounded-2xl border-2 border-amber-500/40 bg-zinc-950 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                <div className="text-amber-400 text-4xl font-mono">
+                  👨‍🍳
+                </div>
               </div>
-              {/* سایر کارت‌ها */}
+
+              {/* اطلاعات شخصی */}
+              <div className="text-center md:text-right flex-1">
+                <h3 className="text-2xl md:text-3xl font-extrabold text-white">
+                  پوریا <span className="text-amber-500 text-lg md:text-xl font-normal">(توسعه‌دهنده فرانت‌اند)</span>
+                </h3>
+                <p className="text-amber-400/80 text-xs md:text-sm font-medium mt-1">
+                  دانش‌آموخته دوره کارآموزی وایب‌کدینگ
+                </p>
+                <p className="text-zinc-400 text-sm md:text-base mt-3 leading-relaxed">
+                  طراحی و پیاده‌سازی پروژه «Chef Menu» با Next.js، Tailwind CSS و TypeScript؛ از ایده‌پردازی و طراحی منوی هوشمند تا محاسبه‌گر مواد اولیه و اسکنر کالری.
+                </p>
+              </div>
             </div>
+
           </div>
         </section>
 
+        {/* ۵. تجربه کاربران */}
         <TestimonialsSection />
       </main>
 
