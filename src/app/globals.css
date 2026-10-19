@@ -34,15 +34,14 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--orange); outlin
 .site-header { position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--line); background: var(--background); color: var(--foreground); box-shadow: var(--card-shadow); }
 .nav-container { max-width: 1360px; margin: auto; min-height: 110px; padding: 0 48px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
 .brand { display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
-.brand-mark { width: 45px; height: 49px; display: grid; place-items: center; color: var(--foreground); }
-.brand-mark svg { width: 40px; height: 40px; }
+.brand-mark { width: 45px; height: 49px; display: grid; place-items: center; color: #fff; }
+.brand-mark svg { width: 24px; height: 24px; }
 .brand-name { font-family: Arial, sans-serif; font-size: 27px; font-weight: 800; color: var(--foreground); letter-spacing: -.7px; white-space: nowrap; }
-.navigation { display: flex; align-items: center; gap: 27px; align-self: stretch; }
-.nav-link { position: relative; display: flex; align-items: center; gap: 7px; font-size: 12px; white-space: nowrap; color: var(--foreground); transition: color .2s; }
-.nav-icon { font-family: Arial, sans-serif; font-size: 19px; }
-.nav-link:hover, .nav-link:focus-visible { color: var(--orange); }
-.nav-link.active::after { content: ""; position: absolute; bottom: 22px; right: 50%; transform: translateX(50%); width: 17px; height: 3px; border-radius: 2px; background: var(--orange); }
-.new-badge { font-size: 8px; padding: 3px 5px; border-radius: 4px; background: var(--accent-soft); color: var(--orange); }
+.navigation { display: flex; align-items: center; gap: 10px; }
+.nav-link { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 9px 15px; border: 1px solid #27272a; border-radius: 12px; background: rgb(24 24 27 / 80%); font-size: 12px; white-space: nowrap; color: var(--foreground); transition: color .2s, background .2s, border-color .2s; }
+.nav-link:hover, .nav-link:focus-visible { color: #fbbf24; background: rgb(39 39 42 / 80%); border-color: rgb(245 158 11 / 50%); }
+.nav-link.active { border-color: rgb(245 158 11 / 60%); background: rgb(245 158 11 / 10%); color: #fbbf24; }
+.new-badge { font-size: 8px; padding: 3px 6px; border: 1px solid rgb(245 158 11 / 20%); border-radius: 999px; background: var(--accent-soft); color: #fbbf24; }
 .nav-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .profile-button { display: inline-flex; justify-content: center; align-items: center; gap: 9px; min-height: 44px; padding: 0 18px; background: var(--orange); border-radius: 9px; color: var(--button-foreground); font-size: 12px; font-weight: 700; transition: background .2s, transform .2s; }
 .profile-button:hover { background: #ed7100; transform: translateY(-1px); }
@@ -64,9 +63,8 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 48px; outline: none; }
 }
 @media (max-width: 1150px) {
   .nav-container { padding-inline: 28px; gap: 18px; }
-  .navigation { gap: 17px; }
-  .nav-link { font-size: 11px; }
-  .nav-icon { display: none; }
+  .navigation { gap: 6px; }
+  .nav-link { padding-inline: 10px; font-size: 11px; }
   .brand-name { font-size: 25px; }
   .new-badge { display: none; }
 }
@@ -74,11 +72,8 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 48px; outline: none; }
   .nav-container { min-height: 90px; padding-inline: 24px; }
   .menu-toggle { display: flex; }
   .navigation { display: none; position: absolute; top: 100%; right: 0; left: 0; background: var(--background); padding: 14px 24px 22px; max-height: calc(100dvh - 90px); overflow-y: auto; border-bottom: 1px solid var(--line); box-shadow: var(--card-shadow); }
-  .navigation.is-open { display: flex; flex-direction: column; align-items: stretch; gap: 4px; }
-  .nav-link { font-size: 13px; min-height: 48px; padding: 12px; border-radius: 8px; gap: 12px; }
-  .nav-icon { display: block; width: 19px; }
-  .nav-link.active { background: var(--accent-soft); }
-  .nav-link.active::after { display: none; }
+  .navigation.is-open { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+  .nav-link { justify-content: flex-start; font-size: 13px; min-height: 48px; padding: 12px 16px; border-radius: 12px; gap: 12px; }
   .new-badge { display: inline-block; }
   .mobile-note { display: block; margin: 16px 12px 0; font-size: 10px; color: var(--muted); }
   main { padding-inline: 32px; }
@@ -89,7 +84,6 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 48px; outline: none; }
   .brand { gap: 5px; }
   .brand-name { font-size: 23px; }
   .brand-mark { width: 31px; }
-  .brand-mark svg { width: 30px; height: 30px; }
   .nav-actions { gap: 8px; }
   .profile-button { padding-inline: 10px; font-size: 10px; gap: 6px; }
   .profile-button svg { width: 15px; }

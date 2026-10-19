@@ -42,14 +42,25 @@ export default function Home() {
       <header className="site-header" dir="rtl">
         <div className="nav-container">
           <Link className="brand" href="/" aria-label="Chef Menu — صفحه اصلی" onClick={() => { setActive("home"); setMenuOpen(false); }}>
-            <span className="brand-mark">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="text-white" aria-hidden="true">
-                <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 10.18 0A4 4 0 0 1 18 13.87V21H6Z" />
-                <line x1="17" y1="17" x2="18" y2="17" />
-                <line x1="10" y1="9" x2="10" y2="14" />
-                <line x1="14" y1="9" x2="14" y2="14" />
-              </svg>
-            </span>
+<span className="brand-mark">
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#ffffff"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M6 13.87A4 4 0 0 1 7.41 6.5 5.11 5.11 0 0 1 12 3a5.25 5.25 0 0 1 5.1 3.5A4 4 0 0 1 18 13.87V21H6Z" />
+    <line x1="6" y1="17" x2="18" y2="17" />
+    <line x1="10" y1="9" x2="10" y2="14" />
+    <line x1="14" y1="9" x2="14" y2="14" />
+  </svg>
+</span>
+
             <span className="brand-name" dir="ltr">Chef Menu</span>
           </Link>
           <nav id="main-navigation" className={`navigation ${menuOpen ? "is-open" : ""}`} aria-label="منوی اصلی">
@@ -68,7 +79,6 @@ export default function Home() {
                     setMenuOpen(false); 
                   }}
                 >
-                  <span className="nav-icon" aria-hidden="true">{link.icon}</span>
                   <span>{link.label}</span>
                   {(link.id === "smart-menu-link" || link.id === "calorie-scanner") && <span className="new-badge">جدید</span>}
                 </Link>
